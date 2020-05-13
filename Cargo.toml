@@ -1,0 +1,8 @@
+[package]
+name = "rusty-snake"
+version = "0.0.0"
+authors = ["GOKOP <igorbugajski@protonmail.com>"]
+edition = "2018"
+
+[dependencies]
+pancurses = "0.16"
