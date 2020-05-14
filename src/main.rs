@@ -7,9 +7,9 @@ fn main() {
     let screen = display::init_curses();
     let window = display::init_window(&screen).expect("Can't create subwindow");
 
-    let _snake = mechanics::Snake::new((20,10));
+    let snake = mechanics::Snake::new((20,10));
 
-    display::print_game(&window);
+    display::print_game(&window, &snake);
     window.getch();
     endwin();
 }

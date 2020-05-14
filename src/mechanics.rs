@@ -7,9 +7,9 @@ pub enum Direction {
 }
 
 #[derive(Clone, Copy)]
-struct BodyPiece {
-    position: (i32, i32),
-    direction: Direction,
+pub struct BodyPiece {
+    pub position: (i32, i32),
+    pub direction: Direction,
 }
 
 impl BodyPiece {
@@ -33,7 +33,7 @@ impl BodyPiece {
 }
 
 pub struct Snake {
-    body: Vec<BodyPiece>,
+    pub body: Vec<BodyPiece>,
     growth: u32,
 }
 
