@@ -13,20 +13,20 @@ pub struct BodyPiece {
 }
 
 impl BodyPiece {
-    fn new(position: &(i32, i32), direction: &Direction) -> BodyPiece {
+    fn new(position: (i32, i32), direction: Direction) -> BodyPiece {
         BodyPiece {
-            position: *position,
-            direction: *direction,
+            position: position,
+            direction: direction,
         }
     }
 
     /// Moves the piece in its current direction
     fn r#move(&mut self) {
         match self.direction {
-            Direction::UP => self.position.0 -= 1,
-            Direction::DOWN => self.position.0 += 1,
-            Direction::RIGHT => self.position.1 += 1,
-            Direction::LEFT => self.position.1 -= 1,
+            Direction::UP => self.position.1 -= 1,
+            Direction::DOWN => self.position.1 += 1,
+            Direction::RIGHT => self.position.0 += 1,
+            Direction::LEFT => self.position.0 -= 1,
         }
     }
 }
@@ -40,7 +40,7 @@ impl Snake {
     /// Creates new snake in the given position, pointing to the right
     pub fn new(position: (i32, i32)) -> Snake {
         Snake {
-            body: vec![BodyPiece::new(&position, &Direction::RIGHT)],
+            body: vec![BodyPiece::new(position, Direction::RIGHT)],
             growth: 3,
         }
     }
@@ -50,19 +50,21 @@ impl Snake {
         self.body[0].direction = *new_dir;
     }
 
-    /// Adds a new piece if self.growth is non-zero and moves all other pieces in their directions
+    /// Moves all other pieces in their directions and adds a new piece if self.growth is non-zero
     pub fn advance(&mut self) {
         if self.growth > 0 {
             if let Some(tail) = self.body.last().cloned() {
                 self.body.push(tail);
             }
+            // leaving growth as it was for later conditional
         }
 
-        let tail_index = self.body.len() - 1;
+        let body_len = self.body.len();
 
-        for index in tail_index..=0 {
-            // ignore the newly added piece
-            if index == tail_index {
+        for index in (0..body_len).rev() {
+            // skipping the new piece
+            if index == body_len - 1 && self.growth > 0 {
+                self.growth -= 1; // ok now it can be decremented
                 continue;
             }
 
