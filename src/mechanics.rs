@@ -13,7 +13,6 @@ pub struct BodyPiece {
 }
 
 impl BodyPiece {
-
     fn new(position: &(i32, i32), direction: &Direction) -> BodyPiece {
         BodyPiece {
             position: *position,
@@ -24,10 +23,10 @@ impl BodyPiece {
     /// Moves the piece in its current direction
     fn r#move(&mut self) {
         match self.direction {
-            Direction::UP    => self.position.0 -= 1,
-            Direction::DOWN  => self.position.0 += 1,
+            Direction::UP => self.position.0 -= 1,
+            Direction::DOWN => self.position.0 += 1,
             Direction::RIGHT => self.position.1 += 1,
-            Direction::LEFT  => self.position.1 -= 1,
+            Direction::LEFT => self.position.1 -= 1,
         }
     }
 }
@@ -38,7 +37,6 @@ pub struct Snake {
 }
 
 impl Snake {
-    
     /// Creates new snake in the given position, pointing to the right
     pub fn new(position: (i32, i32)) -> Snake {
         Snake {
@@ -51,7 +49,7 @@ impl Snake {
     pub fn turn(&mut self, new_dir: &Direction) {
         self.body[0].direction = *new_dir;
     }
-    
+
     /// Adds a new piece if self.growth is non-zero and moves all other pieces in their directions
     pub fn advance(&mut self) {
         if self.growth > 0 {
@@ -60,7 +58,7 @@ impl Snake {
             }
         }
 
-        let tail_index = self.body.len()-1;
+        let tail_index = self.body.len() - 1;
 
         for index in tail_index..=0 {
             // ignore the newly added piece
@@ -70,7 +68,7 @@ impl Snake {
 
             self.body[index].r#move();
             if index > 0 {
-                self.body[index].direction = self.body[index-1].direction;
+                self.body[index].direction = self.body[index - 1].direction;
             }
         }
     }
