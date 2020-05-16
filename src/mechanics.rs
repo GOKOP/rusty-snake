@@ -46,8 +46,8 @@ impl Snake {
     }
 
     /// Changes direction of the snake's head to new_dir
-    pub fn turn(&mut self, new_dir: &Direction) {
-        self.body[0].direction = *new_dir;
+    pub fn turn(&mut self, new_dir: Direction) {
+        self.body[0].direction = new_dir;
     }
 
     /// Moves all other pieces in their directions and adds a new piece if self.growth is non-zero
