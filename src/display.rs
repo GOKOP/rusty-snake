@@ -29,9 +29,9 @@ pub fn print_game(window: &Window, snake: &mechanics::Snake) {
 
     for (index, piece) in snake.body.iter().enumerate() {
         if index == 0 {
-            window.mvaddch(piece.position.1, piece.position.0, '@');
+            window.mvaddch(piece.1, piece.0, '@');
         } else {
-            window.mvaddch(piece.position.1, piece.position.0, 'o');
+            window.mvaddch(piece.1, piece.0, 'o');
         }
     }
 
