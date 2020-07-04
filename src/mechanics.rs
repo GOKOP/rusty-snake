@@ -1,3 +1,9 @@
+#[derive(PartialEq)]
+pub enum State {
+    GAME,
+    LOST,
+}
+
 pub enum Direction {
     UP,
     DOWN,
@@ -6,7 +12,7 @@ pub enum Direction {
 }
 
 pub struct Snake {
-    pub body: Vec<(i32,i32)>,
+    pub body: Vec<(i32, i32)>,
     pub direction: Direction,
     pub growth: u32,
 }

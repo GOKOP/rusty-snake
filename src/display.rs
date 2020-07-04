@@ -15,12 +15,14 @@ pub fn init_curses() -> Window {
 
 pub fn init_window(screen: &Window) -> Window {
     let screen_size = screen.get_max_yx();
-    let window = screen.subwin(
-        DEF_HEIGHT,
-        DEF_WIDTH,
-        (screen_size.0 / 2) - (DEF_HEIGHT / 2),
-        (screen_size.1 / 2) - (DEF_WIDTH / 2),
-    ).expect("Can't create subwindow");
+    let window = screen
+        .subwin(
+            DEF_HEIGHT,
+            DEF_WIDTH,
+            (screen_size.0 / 2) - (DEF_HEIGHT / 2),
+            (screen_size.1 / 2) - (DEF_WIDTH / 2),
+        )
+        .expect("Can't create subwindow");
 
     window.nodelay(true);
     window.keypad(true);
@@ -28,12 +30,14 @@ pub fn init_window(screen: &Window) -> Window {
     window
 }
 
-pub fn print_game(window: &Window, snake: &mechanics::Snake) {
+pub fn print_game(window: &Window, snake: &mechanics::Snake, lost: bool) {
     window.erase();
     window.border('#', '#', '#', '#', '#', '#', '#', '#');
 
     for (index, piece) in snake.body.iter().enumerate() {
-        if index == 0 {
+        if index == 0 && lost {
+            window.mvaddch(piece.1, piece.0, 'X');
+        } else if index == 0 {
             window.mvaddch(piece.1, piece.0, '@');
         } else {
             window.mvaddch(piece.1, piece.0, 'o');
