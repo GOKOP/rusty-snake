@@ -13,14 +13,19 @@ pub fn init_curses() -> Window {
     screen
 }
 
-pub fn init_window(screen: &Window) -> Result<Window, i32> {
+pub fn init_window(screen: &Window) -> Window {
     let screen_size = screen.get_max_yx();
-    screen.subwin(
+    let window = screen.subwin(
         DEF_HEIGHT,
         DEF_WIDTH,
         (screen_size.0 / 2) - (DEF_HEIGHT / 2),
         (screen_size.1 / 2) - (DEF_WIDTH / 2),
-    )
+    ).expect("Can't create subwindow");
+
+    window.nodelay(true);
+    window.keypad(true);
+
+    window
 }
 
 pub fn print_game(window: &Window, snake: &mechanics::Snake) {

@@ -6,9 +6,7 @@ mod mechanics;
 
 fn main() {
     let screen = display::init_curses();
-    let window = display::init_window(&screen).expect("Can't create subwindow");
-    window.nodelay(true);
-    window.keypad(true);
+    let window = display::init_window(&screen);
 
     let mut snake = mechanics::Snake::new((20, 10));
 
