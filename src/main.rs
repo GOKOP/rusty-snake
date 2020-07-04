@@ -20,7 +20,7 @@ fn main() {
             display::print_game(&window, &snake, false);
             thread::sleep(time::Duration::from_millis(50));
 
-            if check_if_lost(&window, &snake) {
+            if mechanics::check_if_lost(window.get_max_yx(), &snake) {
                 state = mechanics::State::LOST;
             }
         } else if state == mechanics::State::LOST {
@@ -31,24 +31,6 @@ fn main() {
         }
     }
     endwin();
-}
-
-fn check_if_lost(window: &Window, snake: &mechanics::Snake) -> bool {
-    let max_pos = window.get_max_yx();
-
-    for (index, piece) in snake.body.iter().enumerate() {
-        if (index == 0
-            && (piece.0 <= 0
-                || piece.1 <= 0
-                || piece.0 >= max_pos.1 - 1
-                || piece.1 >= max_pos.0 - 1))
-            || (index != 0 && *piece == snake.body[0])
-        {
-            return true;
-        }
-    }
-
-    false
 }
 
 fn handle_input(window: &Window, snake: &mut mechanics::Snake, going: &mut bool) {

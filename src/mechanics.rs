@@ -67,3 +67,19 @@ impl Snake {
         }
     }
 }
+
+pub fn check_if_lost(max_pos: (i32,i32), snake: &Snake) -> bool {
+    for (index, piece) in snake.body.iter().enumerate() {
+        if (index == 0
+            && (piece.0 <= 0
+                || piece.1 <= 0
+                || piece.0 >= max_pos.1 - 1
+                || piece.1 >= max_pos.0 - 1))
+            || (index != 0 && *piece == snake.body[0])
+        {
+            return true;
+        }
+    }
+
+    false
+}
