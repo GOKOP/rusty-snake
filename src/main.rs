@@ -24,6 +24,8 @@ fn main() {
             if exec_option {
                 state = main_menu.options[main_menu.selected].target_state;
             }
+            // don't waste cpu on refreshing this
+            thread::sleep(time::Duration::from_millis(10));
         }
         else if state == mechanics::State::Game {
             handle_input(&window, &mut snake, &mut going);
