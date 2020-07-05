@@ -31,9 +31,13 @@ pub fn init_window(screen: &Window) -> Window {
     window
 }
 
-pub fn print_game(window: &Window, snake: &mechanics::Snake, lost: bool) {
+pub fn print_game(window: &Window, snake: &mechanics::Snake, fruits: &Vec<(i32,i32)>, lost: bool) {
     window.erase();
     window.border('#', '#', '#', '#', '#', '#', '#', '#');
+
+    for fruit in fruits {
+        window.mvaddch(fruit.1, fruit.0, '*');
+    }
 
     for (index, piece) in snake.body.iter().enumerate() {
         if index == 0 && lost {

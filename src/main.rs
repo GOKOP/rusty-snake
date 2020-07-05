@@ -11,8 +11,10 @@ fn main() {
     let screen = display::init_curses();
     let window = display::init_window(&screen);
 
-    let mut snake = mechanics::Snake::new((20, 10));
     let mut main_menu = create_main_menu();
+    let mut snake = mechanics::Snake::new((20, 10));
+    let mut fruit_manager = mechanics::FruitManager::new();
+    new_fruit_wrapper(window.get_max_yx(), &snake, &mut fruit_manager);
 
     let mut going = true;
     let mut state = mechanics::State::MainMenu;
@@ -30,14 +32,20 @@ fn main() {
         else if state == mechanics::State::Game {
             handle_input(&window, &mut snake, &mut going);
             snake.advance();
-            display::print_game(&window, &snake, false);
+            display::print_game(&window, &snake, &fruit_manager.fruits, false);
             thread::sleep(time::Duration::from_millis(50));
 
             if mechanics::check_if_lost(window.get_max_yx(), &snake) {
                 state = mechanics::State::Lost;
             }
+
+            if fruit_manager.fruit_eaten(&snake) {
+                snake.growth += 1;
+                new_fruit_wrapper(window.get_max_yx(), &snake, &mut fruit_manager);
+            }
+
         } else if state == mechanics::State::Lost {
-            display::print_game(&window, &snake, true);
+            display::print_game(&window, &snake, &fruit_manager.fruits, true);
             thread::sleep(time::Duration::from_millis(1000));
             snake = mechanics::Snake::new((20, 10));
             state = mechanics::State::MainMenu;
@@ -66,4 +74,9 @@ fn create_main_menu() -> interface::SimpleMenu {
     options.push(interface::MenuOption::new("Exit".to_string(), mechanics::State::Quit));
 
     interface::SimpleMenu::new("Rusty Snake".to_string(), VERSION.to_string(), options)
+}
+
+fn new_fruit_wrapper(max_yx: (i32,i32), snake: &mechanics::Snake, fruit_manager: &mut mechanics::FruitManager) {
+    let max_xy = (max_yx.1, max_yx.0);
+    fruit_manager.place_new(max_xy, &snake);
 }

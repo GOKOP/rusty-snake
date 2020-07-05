@@ -1,3 +1,5 @@
+use rand::Rng;
+
 #[derive(PartialEq, Clone, Copy)]
 pub enum State {
     MainMenu,
@@ -66,6 +68,73 @@ impl Snake {
             } else {
                 self.body[index] = self.body[index - 1];
             }
+        }
+    }
+
+    /// checks if given position is inside of the snake
+    pub fn inside(&self, pos: (i32,i32)) -> bool {
+        for piece in &self.body {
+            if pos == *piece {
+                return true;
+            }
+        }
+        false
+    }
+}
+
+pub struct FruitManager {
+    pub fruits: Vec<(i32, i32)>,
+}
+
+impl FruitManager {
+    pub fn new() -> FruitManager {
+        FruitManager {
+            fruits: Vec::<(i32, i32)>::new(),
+        }
+    }
+
+    /// place a new fruit in a random spot between (0,0) and max_pos-1 exclusively
+    pub fn place_new(&mut self, max_pos: (i32,i32), snake: &Snake) {
+        let mut rng = rand::thread_rng();
+
+        let mut x = 0;
+        let mut y = 0;
+
+        while x == 0 || y == 0 || !self.fruit_unique((x,y)) || snake.inside((x,y)){
+            x = rng.gen_range(1, max_pos.0-1);
+            y = rng.gen_range(1, max_pos.1-1);
+        }
+
+        self.fruits.push((x,y));
+    }
+
+    /// check if new_fruit with given position doesn't already exist
+    fn fruit_unique(&self, new_fruit: (i32,i32)) -> bool {
+        for fruit in &self.fruits {
+            if new_fruit == *fruit {
+                return false;
+            }
+        }
+
+        true
+    }
+
+    /// check if a fruit has been eaten and remove it
+    pub fn fruit_eaten(&mut self, snake: &Snake) -> bool {
+        let mut remove_index: i32 = -1;
+
+        for (index, fruit) in self.fruits.iter().enumerate() {
+            if snake.body[0] == *fruit {
+                remove_index = index as i32;
+                break;
+            }
+        }
+
+        if remove_index >= 0 {
+            self.fruits.remove(remove_index as usize);
+            true
+        } else {
+            false
         }
     }
 }
