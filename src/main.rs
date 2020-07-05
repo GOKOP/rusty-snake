@@ -48,6 +48,8 @@ fn main() {
             display::print_game(&window, &snake, &fruit_manager.fruits, true);
             thread::sleep(time::Duration::from_millis(1000));
             snake = mechanics::Snake::new((20, 10));
+            fruit_manager = mechanics::FruitManager::new();
+            new_fruit_wrapper(window.get_max_yx(), &snake, &mut fruit_manager);
             flush_input(&window);
             state = mechanics::State::MainMenu;
         } else if state == mechanics::State::Quit {
