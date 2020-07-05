@@ -1,7 +1,9 @@
-#[derive(PartialEq)]
+#[derive(PartialEq, Clone, Copy)]
 pub enum State {
+    MAIN_MENU,
     GAME,
     LOST,
+    QUIT,
 }
 
 pub enum Direction {
