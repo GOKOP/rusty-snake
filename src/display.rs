@@ -75,5 +75,8 @@ pub fn print_simple_menu(window: &Window, menu: &interface::SimpleMenu) {
         y += 1
     }
 
+    let bottom_text_x = window.get_max_x() - 1 - (menu.bottom_text.len() as i32);
+    window.mvaddstr(window.get_max_y()-1, bottom_text_x, &menu.bottom_text);
+
     window.refresh();
 }

@@ -61,7 +61,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "rusty-snake"
-version = "0.0.0"
+version = "0.0.1"
 dependencies = [
  "pancurses 0.16.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]

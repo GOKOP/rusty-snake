@@ -1,6 +1,8 @@
 use pancurses::{endwin, Input, Window};
 use std::{thread, time};
 
+static VERSION: &str = "v0.0.1";
+
 mod display;
 mod mechanics;
 mod interface;
@@ -61,5 +63,5 @@ fn create_main_menu() -> interface::SimpleMenu {
     options.push(interface::MenuOption::new("Play".to_string(), mechanics::State::Game));
     options.push(interface::MenuOption::new("Exit".to_string(), mechanics::State::Quit));
 
-    interface::SimpleMenu::new("Rusty Snake".to_string(), options)
+    interface::SimpleMenu::new("Rusty Snake".to_string(), VERSION.to_string(), options)
 }

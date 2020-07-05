@@ -17,14 +17,16 @@ impl MenuOption {
 
 pub struct SimpleMenu {
     pub title: String,
+    pub bottom_text: String,
     pub options: Vec<MenuOption>,
     pub selected: usize,
 }
 
 impl SimpleMenu {
-    pub fn new(title: String, options: Vec<MenuOption>) -> SimpleMenu {
+    pub fn new(title: String, bottom_text: String, options: Vec<MenuOption>) -> SimpleMenu {
         SimpleMenu {
             title: title,
+            bottom_text: bottom_text,
             options: options,
             selected: 0,
         }
