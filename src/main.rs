@@ -30,7 +30,7 @@ fn main() {
             thread::sleep(time::Duration::from_millis(10));
         }
         else if state == mechanics::State::Game {
-            handle_input(&window, &mut snake, &mut going);
+            handle_input(&window, &mut snake, &mut state);
             snake.advance();
             display::print_game(&window, &snake, &fruit_manager.fruits, false);
             thread::sleep(time::Duration::from_millis(50));
@@ -59,9 +59,9 @@ fn main() {
     endwin();
 }
 
-fn handle_input(window: &Window, snake: &mut mechanics::Snake, going: &mut bool) {
+fn handle_input(window: &Window, snake: &mut mechanics::Snake, state: &mut mechanics::State) {
     match window.getch() {
-        Some(Input::Character('q')) => *going = false,
+        Some(Input::Character('q')) => *state = mechanics::State::MainMenu,
         Some(Input::KeyUp) => snake.turn(mechanics::Direction::Up),
         Some(Input::KeyDown) => snake.turn(mechanics::Direction::Down),
         Some(Input::KeyRight) => snake.turn(mechanics::Direction::Right),
