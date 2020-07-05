@@ -48,6 +48,7 @@ fn main() {
             display::print_game(&window, &snake, &fruit_manager.fruits, true);
             thread::sleep(time::Duration::from_millis(1000));
             snake = mechanics::Snake::new((20, 10));
+            flush_input(&window);
             state = mechanics::State::MainMenu;
         } else if state == mechanics::State::Quit {
             going = false;
@@ -79,4 +80,10 @@ fn create_main_menu() -> interface::SimpleMenu {
 fn new_fruit_wrapper(max_yx: (i32,i32), snake: &mechanics::Snake, fruit_manager: &mut mechanics::FruitManager) {
     let max_xy = (max_yx.1, max_yx.0);
     fruit_manager.place_new(max_xy, &snake);
+}
+
+fn flush_input(window: &Window) {
+    while let Some(_) = window.getch() {
+        // do nothing
+    }
 }
