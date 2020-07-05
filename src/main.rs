@@ -4,8 +4,8 @@ use std::{thread, time};
 static VERSION: &str = "v0.1.0";
 
 mod display;
-mod mechanics;
 mod interface;
+mod mechanics;
 
 fn main() {
     let screen = display::init_curses();
@@ -28,8 +28,7 @@ fn main() {
             }
             // don't waste cpu on refreshing this
             thread::sleep(time::Duration::from_millis(10));
-        }
-        else if state == mechanics::State::Game {
+        } else if state == mechanics::State::Game {
             handle_input(&window, &mut snake, &mut state);
             snake.advance();
             display::print_game(&window, &snake, &fruit_manager.fruits, false);
@@ -43,7 +42,6 @@ fn main() {
                 snake.growth += 1;
                 new_fruit_wrapper(window.get_max_yx(), &snake, &mut fruit_manager);
             }
-
         } else if state == mechanics::State::Lost {
             display::print_game(&window, &snake, &fruit_manager.fruits, true);
             thread::sleep(time::Duration::from_millis(1000));
@@ -72,14 +70,24 @@ fn handle_input(window: &Window, snake: &mut mechanics::Snake, state: &mut mecha
 
 fn create_main_menu() -> interface::SimpleMenu {
     let mut options = Vec::new();
-    
-    options.push(interface::MenuOption::new("Play".to_string(), mechanics::State::Game));
-    options.push(interface::MenuOption::new("Exit".to_string(), mechanics::State::Quit));
+
+    options.push(interface::MenuOption::new(
+        "Play".to_string(),
+        mechanics::State::Game,
+    ));
+    options.push(interface::MenuOption::new(
+        "Exit".to_string(),
+        mechanics::State::Quit,
+    ));
 
     interface::SimpleMenu::new("Rusty Snake".to_string(), VERSION.to_string(), options)
 }
 
-fn new_fruit_wrapper(max_yx: (i32,i32), snake: &mechanics::Snake, fruit_manager: &mut mechanics::FruitManager) {
+fn new_fruit_wrapper(
+    max_yx: (i32, i32),
+    snake: &mechanics::Snake,
+    fruit_manager: &mut mechanics::FruitManager,
+) {
     let max_xy = (max_yx.1, max_yx.0);
     fruit_manager.place_new(max_xy, &snake);
 }

@@ -37,7 +37,8 @@ impl Snake {
         if (new_dir == Direction::Up && self.direction != Direction::Down)
             || (new_dir == Direction::Down && self.direction != Direction::Up)
             || (new_dir == Direction::Right && self.direction != Direction::Left)
-            || (new_dir == Direction::Left && self.direction != Direction::Right) {
+            || (new_dir == Direction::Left && self.direction != Direction::Right)
+        {
             self.direction = new_dir;
         }
     }
@@ -78,7 +79,7 @@ impl Snake {
     }
 
     /// checks if given position is inside of the snake
-    pub fn inside(&self, pos: (i32,i32)) -> bool {
+    pub fn inside(&self, pos: (i32, i32)) -> bool {
         for piece in &self.body {
             if pos == *piece {
                 return true;
@@ -100,22 +101,22 @@ impl FruitManager {
     }
 
     /// place a new fruit in a random spot between (0,0) and max_pos-1 exclusively
-    pub fn place_new(&mut self, max_pos: (i32,i32), snake: &Snake) {
+    pub fn place_new(&mut self, max_pos: (i32, i32), snake: &Snake) {
         let mut rng = rand::thread_rng();
 
         let mut x = 0;
         let mut y = 0;
 
-        while x == 0 || y == 0 || !self.fruit_unique((x,y)) || snake.inside((x,y)){
-            x = rng.gen_range(1, max_pos.0-1);
-            y = rng.gen_range(1, max_pos.1-1);
+        while x == 0 || y == 0 || !self.fruit_unique((x, y)) || snake.inside((x, y)) {
+            x = rng.gen_range(1, max_pos.0 - 1);
+            y = rng.gen_range(1, max_pos.1 - 1);
         }
 
-        self.fruits.push((x,y));
+        self.fruits.push((x, y));
     }
 
     /// check if new_fruit with given position doesn't already exist
-    fn fruit_unique(&self, new_fruit: (i32,i32)) -> bool {
+    fn fruit_unique(&self, new_fruit: (i32, i32)) -> bool {
         for fruit in &self.fruits {
             if new_fruit == *fruit {
                 return false;
@@ -145,7 +146,7 @@ impl FruitManager {
     }
 }
 
-pub fn check_if_lost(max_pos: (i32,i32), snake: &Snake) -> bool {
+pub fn check_if_lost(max_pos: (i32, i32), snake: &Snake) -> bool {
     for (index, piece) in snake.body.iter().enumerate() {
         if (index == 0
             && (piece.0 <= 0

@@ -1,5 +1,5 @@
-use pancurses::Input;
 use crate::mechanics::State;
+use pancurses::Input;
 
 pub struct MenuOption {
     pub text: String,
@@ -34,7 +34,7 @@ impl SimpleMenu {
 
     /// move down the options list and wrap to the top
     fn move_down(&mut self) {
-        if self.selected >= self.options.len()-1 {
+        if self.selected >= self.options.len() - 1 {
             self.selected = 0;
         } else {
             self.selected += 1;
@@ -44,7 +44,7 @@ impl SimpleMenu {
     /// move up the options list and wrap to the bottom
     fn move_up(&mut self) {
         if self.selected <= 0 {
-            self.selected = self.options.len()-1;
+            self.selected = self.options.len() - 1;
         } else {
             self.selected -= 1;
         }

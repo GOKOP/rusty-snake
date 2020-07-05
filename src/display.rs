@@ -1,5 +1,5 @@
-use crate::mechanics;
 use crate::interface;
+use crate::mechanics;
 use pancurses::*;
 
 static DEF_WIDTH: i32 = 40;
@@ -31,7 +31,7 @@ pub fn init_window(screen: &Window) -> Window {
     window
 }
 
-pub fn print_game(window: &Window, snake: &mechanics::Snake, fruits: &Vec<(i32,i32)>, lost: bool) {
+pub fn print_game(window: &Window, snake: &mechanics::Snake, fruits: &Vec<(i32, i32)>, lost: bool) {
     window.erase();
     //window.border('#', '#', '#', '#', '#', '#', '#', '#');
     print_border(&window, '█');
@@ -52,7 +52,7 @@ pub fn print_game(window: &Window, snake: &mechanics::Snake, fruits: &Vec<(i32,i
 
     // displaying body length in the corner
     let score = format!("Body: {}", snake.body.len());
-    window.mvaddstr(window.get_max_y()-1, 1, score);
+    window.mvaddstr(window.get_max_y() - 1, 1, score);
 
     window.refresh();
 }
@@ -60,30 +60,30 @@ pub fn print_game(window: &Window, snake: &mechanics::Snake, fruits: &Vec<(i32,i
 /// print window border with unicode support
 fn print_border(window: &Window, ch: char) {
     let mut horizontal = String::new();
-    
-    for _ in 0 .. window.get_max_x() {
+
+    for _ in 0..window.get_max_x() {
         horizontal = format!("{}{}", horizontal, ch);
     }
 
     window.mvaddstr(0, 0, &horizontal);
-    window.mvaddstr(window.get_max_y()-1, 0, &horizontal);
+    window.mvaddstr(window.get_max_y() - 1, 0, &horizontal);
 
-    for y in 1 .. window.get_max_y()-1 {
+    for y in 1..window.get_max_y() - 1 {
         window.mvaddstr(y, 0, ch.to_string());
-        window.mvaddstr(y, window.get_max_x()-1, ch.to_string());
+        window.mvaddstr(y, window.get_max_x() - 1, ch.to_string());
     }
 }
 
 pub fn print_simple_menu(window: &Window, menu: &interface::SimpleMenu) {
     window.erase();
-    
+
     let menu_height = (menu.options.len() + 2) as i32;
     let window_height = window.get_max_y();
-    let menu_start_y = window_height/2 - menu_height/2;
+    let menu_start_y = window_height / 2 - menu_height / 2;
 
     let window_width = window.get_max_x();
     let title_width = menu.title.len() as i32;
-    let title_start_x = window_width/2 - title_width/2;
+    let title_start_x = window_width / 2 - title_width / 2;
 
     window.mvaddstr(menu_start_y, title_start_x, &menu.title);
 
@@ -96,13 +96,13 @@ pub fn print_simple_menu(window: &Window, menu: &interface::SimpleMenu) {
         } else {
             string = option.text.clone();
         }
-        let x = window_width/2 - ((string.len()/2) as i32);
+        let x = window_width / 2 - ((string.len() / 2) as i32);
         window.mvaddstr(y, x, string);
         y += 1
     }
 
     let bottom_text_x = window.get_max_x() - 1 - (menu.bottom_text.len() as i32);
-    window.mvaddstr(window.get_max_y()-1, bottom_text_x, &menu.bottom_text);
+    window.mvaddstr(window.get_max_y() - 1, bottom_text_x, &menu.bottom_text);
 
     window.refresh();
 }
