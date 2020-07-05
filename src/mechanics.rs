@@ -8,6 +8,7 @@ pub enum State {
     Quit,
 }
 
+#[derive(PartialEq)]
 pub enum Direction {
     Up,
     Down,
@@ -33,7 +34,12 @@ impl Snake {
 
     /// Changes direction of the snake's head to new_dir
     pub fn turn(&mut self, new_dir: Direction) {
-        self.direction = new_dir;
+        if (new_dir == Direction::Up && self.direction != Direction::Down)
+            || (new_dir == Direction::Down && self.direction != Direction::Up)
+            || (new_dir == Direction::Right && self.direction != Direction::Left)
+            || (new_dir == Direction::Left && self.direction != Direction::Right) {
+            self.direction = new_dir;
+        }
     }
 
     fn move_head(&mut self) {
