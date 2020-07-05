@@ -1,7 +1,7 @@
 use pancurses::{endwin, Input, Window};
 use std::{thread, time};
 
-static VERSION: &str = "v0.0.1";
+static VERSION: &str = "v0.1.0";
 
 mod display;
 mod mechanics;
