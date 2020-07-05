@@ -1,16 +1,16 @@
 #[derive(PartialEq, Clone, Copy)]
 pub enum State {
-    MAIN_MENU,
-    GAME,
-    LOST,
-    QUIT,
+    MainMenu,
+    Game,
+    Lost,
+    Quit,
 }
 
 pub enum Direction {
-    UP,
-    DOWN,
-    RIGHT,
-    LEFT,
+    Up,
+    Down,
+    Right,
+    Left,
 }
 
 pub struct Snake {
@@ -24,7 +24,7 @@ impl Snake {
     pub fn new(position: (i32, i32)) -> Snake {
         Snake {
             body: vec![position],
-            direction: Direction::RIGHT,
+            direction: Direction::Up,
             growth: 3,
         }
     }
@@ -36,10 +36,10 @@ impl Snake {
 
     fn move_head(&mut self) {
         match self.direction {
-            Direction::RIGHT => self.body[0].0 += 1,
-            Direction::LEFT => self.body[0].0 -= 1,
-            Direction::UP => self.body[0].1 -= 1,
-            Direction::DOWN => self.body[0].1 += 1,
+            Direction::Right => self.body[0].0 += 1,
+            Direction::Left => self.body[0].0 -= 1,
+            Direction::Up => self.body[0].1 -= 1,
+            Direction::Down => self.body[0].1 += 1,
         }
     }
 
