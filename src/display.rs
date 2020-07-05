@@ -33,7 +33,8 @@ pub fn init_window(screen: &Window) -> Window {
 
 pub fn print_game(window: &Window, snake: &mechanics::Snake, fruits: &Vec<(i32,i32)>, lost: bool) {
     window.erase();
-    window.border('#', '#', '#', '#', '#', '#', '#', '#');
+    //window.border('#', '#', '#', '#', '#', '#', '#', '#');
+    print_border(&window, '█');
 
     for fruit in fruits {
         window.mvaddch(fruit.1, fruit.0, '*');
@@ -49,7 +50,28 @@ pub fn print_game(window: &Window, snake: &mechanics::Snake, fruits: &Vec<(i32,i
         }
     }
 
+    // displaying body length in the corner
+    let score = format!("Body: {}", snake.body.len());
+    window.mvaddstr(window.get_max_y()-1, 1, score);
+
     window.refresh();
+}
+
+/// print window border with unicode support
+fn print_border(window: &Window, ch: char) {
+    let mut horizontal = String::new();
+    
+    for _ in 0 .. window.get_max_x() {
+        horizontal = format!("{}{}", horizontal, ch);
+    }
+
+    window.mvaddstr(0, 0, &horizontal);
+    window.mvaddstr(window.get_max_y()-1, 0, &horizontal);
+
+    for y in 1 .. window.get_max_y()-1 {
+        window.mvaddstr(y, 0, ch.to_string());
+        window.mvaddstr(y, window.get_max_x()-1, ch.to_string());
+    }
 }
 
 pub fn print_simple_menu(window: &Window, menu: &interface::SimpleMenu) {
