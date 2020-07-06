@@ -82,6 +82,22 @@ pub fn init_window(screen: &Window) -> Window {
     window
 }
 
+// print a char or a string in given color
+fn print<T>(window: &Window, pos: (i32, i32), item: T, pair: i16, bold: bool) where T: ToString {
+    if pair != 0 {
+        window.attron(COLOR_PAIR(pair));
+        if bold {
+            window.attron(A_BOLD);
+        }
+    }
+
+    window.mvaddstr(pos.1, pos.0, item.to_string());
+
+    if pair != 0 {
+        window.attrset(A_NORMAL);
+    }
+}
+
 pub fn print_game(window: &Window, snake: &mechanics::Snake, fruits: &Vec<(i32, i32)>, lost: bool) {
     window.erase();
     //window.border('#', '#', '#', '#', '#', '#', '#', '#');
