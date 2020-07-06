@@ -5,6 +5,57 @@ use pancurses::*;
 static DEF_WIDTH: i32 = 40;
 static DEF_HEIGHT: i32 = 20;
 
+// which color pair is used for what
+static COLOR_SNAKE: i16 = 1;
+static COLOR_DEAD: i16 = 2;
+static COLOR_FRAME: i16 = 3;
+static COLOR_SCORE: i16 = 4;
+static COLOR_FRUIT: i16 = 5;
+static COLOR_MENU_TITLE: i16 = 6;
+static COLOR_MENU_OPTION: i16 = 7;
+static COLOR_MENU_ACTIVE: i16 = 8;
+
+// bool value in return tells whether pair at index is supposed to be bold
+// on failure return an empty vector because I'd have to create it anyway
+pub fn init_colors() -> Vec<bool> {
+    if !has_colors() {
+        return Vec::<bool>::new();
+    }
+
+    let mut background = COLOR_BLACK;
+    if use_default_colors() == OK {
+        background = -1;
+    }
+
+    let mut bold_values = vec![false]; // index 0 refers to color pair 0 which is the default one
+
+    init_pair(COLOR_SNAKE, COLOR_GREEN, background);
+    bold_values.push(true);
+
+    init_pair(COLOR_DEAD, COLOR_GREEN, background);
+    bold_values.push(true);
+
+    init_pair(COLOR_FRAME, COLOR_WHITE, COLOR_WHITE);
+    bold_values.push(false);
+
+    init_pair(COLOR_SCORE, background, COLOR_WHITE);
+    bold_values.push(false);
+
+    init_pair(COLOR_FRUIT, COLOR_RED, background);
+    bold_values.push(false);
+
+    init_pair(COLOR_MENU_TITLE, COLOR_RED, background);
+    bold_values.push(true);
+
+    init_pair(COLOR_MENU_OPTION, COLOR_WHITE, background);
+    bold_values.push(true);
+
+    init_pair(COLOR_MENU_ACTIVE, COLOR_WHITE, COLOR_RED);
+    bold_values.push(true);
+
+    bold_values
+}
+
 pub fn init_curses() -> Window {
     let screen = initscr();
     screen.keypad(true);
