@@ -45,6 +45,7 @@ impl ColorWrap {
             return;
         }
 
+        // type left to be infered because ncurses expects u32 but pdcurses expects u64
         window.attron(COLOR_PAIR(self.pair as _));
         if self.bold {
             window.attron(A_BOLD);
