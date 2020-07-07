@@ -2,18 +2,18 @@ use crate::interface;
 use crate::mechanics;
 use pancurses::*;
 
-static DEF_WIDTH: i32 = 40;
-static DEF_HEIGHT: i32 = 20;
+const DEF_WIDTH: i32 = 40;
+const DEF_HEIGHT: i32 = 20;
 
 // which color pair is used for what
-static COLOR_SNAKE: i16 = 1;
-static COLOR_DEAD: i16 = 2;
-static COLOR_FRAME: i16 = 3;
-static COLOR_SCORE: i16 = 4;
-static COLOR_FRUIT: i16 = 5;
-static COLOR_MENU_TITLE: i16 = 6;
-static COLOR_MENU_OPTION: i16 = 7;
-static COLOR_MENU_SELECTED: i16 = 8;
+const COLOR_SNAKE: i16 = 1;
+const COLOR_DEAD: i16 = 2;
+const COLOR_FRAME: i16 = 3;
+const COLOR_SCORE: i16 = 4;
+const COLOR_FRUIT: i16 = 5;
+const COLOR_MENU_TITLE: i16 = 6;
+const COLOR_MENU_OPTION: i16 = 7;
+const COLOR_MENU_SELECTED: i16 = 8;
 
 #[derive(Clone, Copy)]
 pub struct ColorWrap {
