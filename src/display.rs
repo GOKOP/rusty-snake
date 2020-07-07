@@ -145,7 +145,7 @@ pub fn print_game(window: &Window, snake: &mechanics::Snake, fruits: &Vec<(i32, 
         print(&window, (fruit.0, fruit.1), '*', fruit_color);
     }
 
-    for (index, piece) in snake.body.iter().enumerate() {
+    for (index, piece) in snake.body.iter().enumerate().rev() {
         if index == 0 && lost {
             print(&window, (piece.0, piece.1), 'X', dead_color);
         } else if index == 0 {
