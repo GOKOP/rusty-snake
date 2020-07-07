@@ -15,6 +15,7 @@ static COLOR_MENU_TITLE: i16 = 6;
 static COLOR_MENU_OPTION: i16 = 7;
 static COLOR_MENU_ACTIVE: i16 = 8;
 
+#[derive(Clone, Copy)]
 pub struct ColorWrap {
     pair: i16,
     bold: bool,
@@ -64,7 +65,7 @@ impl ColorWrap {
 
 // on failure return a vector with a dummy ColorWrap
 pub fn init_colors() -> Vec<ColorWrap> {
-    if !has_colors() {
+    if !has_colors() || start_color() == ERR {
         return vec![ColorWrap::new_dummy()];
     }
 
@@ -122,46 +123,59 @@ fn print<T>(window: &Window, pos: (i32, i32), item: T, color: ColorWrap) where T
     color.disable(&window);
 }
 
-pub fn print_game(window: &Window, snake: &mechanics::Snake, fruits: &Vec<(i32, i32)>, lost: bool) {
+pub fn print_game(window: &Window, snake: &mechanics::Snake, fruits: &Vec<(i32, i32)>, lost: bool, colors: &Vec<ColorWrap>) {
+    let mut frame_color = colors[0];
+    let mut fruit_color = colors[0];
+    let mut snake_color = colors[0];
+    let mut dead_color = colors[0];
+    let mut score_color = colors[0];
+
+    if colors.len() > 1 {
+        frame_color = colors[COLOR_FRAME as usize];
+        fruit_color = colors[COLOR_FRUIT as usize];
+        snake_color = colors[COLOR_SNAKE as usize];
+        dead_color = colors[COLOR_DEAD as usize];
+        score_color = colors[COLOR_SCORE as usize];
+    }
+
     window.erase();
-    //window.border('#', '#', '#', '#', '#', '#', '#', '#');
-    print_border(&window, '█');
+    print_border(&window, '█', frame_color);
 
     for fruit in fruits {
-        window.mvaddch(fruit.1, fruit.0, '*');
+        print(&window, (fruit.0, fruit.1), '*', fruit_color);
     }
 
     for (index, piece) in snake.body.iter().enumerate() {
         if index == 0 && lost {
-            window.mvaddch(piece.1, piece.0, 'X');
+            print(&window, (piece.0, piece.1), 'X', snake_color);
         } else if index == 0 {
-            window.mvaddch(piece.1, piece.0, '@');
+            print(&window, (piece.0, piece.1), '@', snake_color);
         } else {
-            window.mvaddch(piece.1, piece.0, 'o');
+            print(&window, (piece.0, piece.1), 'o', snake_color);
         }
     }
 
     // displaying body length in the corner
     let score = format!("Body: {}", snake.body.len());
-    window.mvaddstr(window.get_max_y() - 1, 1, score);
+    print(&window, (1, window.get_max_y() - 1), score, score_color);
 
     window.refresh();
 }
 
-/// print window border with unicode support
-fn print_border(window: &Window, ch: char) {
+/// print window border
+fn print_border(window: &Window, ch: char, color: ColorWrap) {
     let mut horizontal = String::new();
 
     for _ in 0..window.get_max_x() {
         horizontal = format!("{}{}", horizontal, ch);
     }
 
-    window.mvaddstr(0, 0, &horizontal);
-    window.mvaddstr(window.get_max_y() - 1, 0, &horizontal);
+    print(&window, (0, 0), &horizontal, color);
+    print(&window, (0, window.get_max_y() - 1), &horizontal, color);
 
     for y in 1..window.get_max_y() - 1 {
-        window.mvaddstr(y, 0, ch.to_string());
-        window.mvaddstr(y, window.get_max_x() - 1, ch.to_string());
+        print(&window, (0, y), ch.to_string(), color);
+        print(&window, (window.get_max_x() - 1, y), ch.to_string(), color);
     }
 }
 
