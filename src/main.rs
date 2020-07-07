@@ -1,7 +1,7 @@
 use pancurses::{endwin, Input, Window};
 use std::{thread, time};
 
-const VERSION: &str = "v0.1.0";
+const VERSION: &str = "v0.2.0";
 
 mod display;
 mod interface;
