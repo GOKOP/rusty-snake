@@ -79,9 +79,9 @@ pub fn init_colors() -> Vec<ColorWrap> {
     let mut colors = vec![ColorWrap::new_dummy()];
 
     colors.push(ColorWrap::new(COLOR_SNAKE, COLOR_GREEN, background, true));
-    colors.push(ColorWrap::new(COLOR_DEAD, COLOR_GREEN, background, true));
+    colors.push(ColorWrap::new(COLOR_DEAD, COLOR_RED, background, true));
     colors.push(ColorWrap::new(COLOR_FRAME, COLOR_WHITE, COLOR_WHITE, false));
-    colors.push(ColorWrap::new(COLOR_SCORE, background, COLOR_WHITE, false));
+    colors.push(ColorWrap::new(COLOR_SCORE, COLOR_BLACK, COLOR_WHITE, false));
     colors.push(ColorWrap::new(COLOR_FRUIT, COLOR_RED, background, false));
     colors.push(ColorWrap::new(COLOR_MENU_TITLE, COLOR_RED, background, true));
     colors.push(ColorWrap::new(COLOR_MENU_OPTION, COLOR_WHITE, background, true));
