@@ -10,6 +10,7 @@ mod mechanics;
 fn main() {
     let screen = display::init_curses();
     let window = display::init_window(&screen);
+    let colors = display::init_colors();
 
     let mut main_menu = create_main_menu();
     let mut snake = mechanics::Snake::new((20, 10));
@@ -21,7 +22,7 @@ fn main() {
 
     while going {
         if state == mechanics::State::MainMenu {
-            display::print_simple_menu(&window, &main_menu);
+            display::print_simple_menu(&window, &main_menu, &colors);
             let exec_option = main_menu.handle_input(window.getch());
             if exec_option {
                 state = main_menu.options[main_menu.selected].target_state;
@@ -31,7 +32,7 @@ fn main() {
         } else if state == mechanics::State::Game {
             handle_input(&window, &mut snake, &mut state);
             snake.advance();
-            display::print_game(&window, &snake, &fruit_manager.fruits, false);
+            display::print_game(&window, &snake, &fruit_manager.fruits, false, &colors);
             thread::sleep(time::Duration::from_millis(50));
 
             if mechanics::check_if_lost(window.get_max_yx(), &snake) {
@@ -43,7 +44,7 @@ fn main() {
                 new_fruit_wrapper(window.get_max_yx(), &snake, &mut fruit_manager);
             }
         } else if state == mechanics::State::Lost {
-            display::print_game(&window, &snake, &fruit_manager.fruits, true);
+            display::print_game(&window, &snake, &fruit_manager.fruits, true, &colors);
             thread::sleep(time::Duration::from_millis(1000));
             snake = mechanics::Snake::new((20, 10));
             fruit_manager = mechanics::FruitManager::new();
