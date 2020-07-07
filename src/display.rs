@@ -15,11 +15,57 @@ static COLOR_MENU_TITLE: i16 = 6;
 static COLOR_MENU_OPTION: i16 = 7;
 static COLOR_MENU_ACTIVE: i16 = 8;
 
-// bool value in return tells whether pair at index is supposed to be bold
-// on failure return an empty vector because I'd have to create it anyway
-pub fn init_colors() -> Vec<bool> {
+pub struct ColorWrap {
+    pair: i16,
+    bold: bool,
+    dummy: bool,
+}
+
+impl ColorWrap {
+    fn new(pair: i16, fcolor: i16, bcolor: i16, bold: bool) -> ColorWrap {
+        init_pair(pair, fcolor, bcolor);
+        ColorWrap {
+            pair: pair,
+            bold: bold,
+            dummy: false,
+        }
+    }
+
+    fn new_dummy() -> ColorWrap {
+        ColorWrap {
+            pair: 0,
+            bold: false,
+            dummy: true,
+        }
+    }
+
+    fn enable(&self, window: &Window) {
+        if self.dummy {
+            return;
+        }
+
+        window.attron(COLOR_PAIR(self.pair as u32));
+        if self.bold {
+            window.attron(A_BOLD);
+        }
+    }
+
+    fn disable(&self, window: &Window) {
+        if self.dummy {
+            return
+        }
+
+        window.attroff(COLOR_PAIR(self.pair as u32));
+        if self.bold {
+            window.attroff(A_BOLD);
+        }
+    }
+}
+
+// on failure return a vector with a dummy ColorWrap
+pub fn init_colors() -> Vec<ColorWrap> {
     if !has_colors() {
-        return Vec::<bool>::new();
+        return vec![ColorWrap::new_dummy()];
     }
 
     let mut background = COLOR_BLACK;
@@ -27,33 +73,20 @@ pub fn init_colors() -> Vec<bool> {
         background = -1;
     }
 
-    let mut bold_values = vec![false]; // index 0 refers to color pair 0 which is the default one
+    // occupy index 0 so that indexes correspond to color pairs
+    // (I think that pair 0 is supposed to be the default color or sth)
+    let mut colors = vec![ColorWrap::new_dummy()];
 
-    init_pair(COLOR_SNAKE, COLOR_GREEN, background);
-    bold_values.push(true);
+    colors.push(ColorWrap::new(COLOR_SNAKE, COLOR_GREEN, background, true));
+    colors.push(ColorWrap::new(COLOR_DEAD, COLOR_GREEN, background, true));
+    colors.push(ColorWrap::new(COLOR_FRAME, COLOR_WHITE, COLOR_WHITE, false));
+    colors.push(ColorWrap::new(COLOR_SCORE, background, COLOR_WHITE, false));
+    colors.push(ColorWrap::new(COLOR_FRUIT, COLOR_RED, background, false));
+    colors.push(ColorWrap::new(COLOR_MENU_TITLE, COLOR_RED, background, true));
+    colors.push(ColorWrap::new(COLOR_MENU_OPTION, COLOR_WHITE, background, true));
+    colors.push(ColorWrap::new(COLOR_MENU_ACTIVE, COLOR_WHITE, COLOR_RED, true));
 
-    init_pair(COLOR_DEAD, COLOR_GREEN, background);
-    bold_values.push(true);
-
-    init_pair(COLOR_FRAME, COLOR_WHITE, COLOR_WHITE);
-    bold_values.push(false);
-
-    init_pair(COLOR_SCORE, background, COLOR_WHITE);
-    bold_values.push(false);
-
-    init_pair(COLOR_FRUIT, COLOR_RED, background);
-    bold_values.push(false);
-
-    init_pair(COLOR_MENU_TITLE, COLOR_RED, background);
-    bold_values.push(true);
-
-    init_pair(COLOR_MENU_OPTION, COLOR_WHITE, background);
-    bold_values.push(true);
-
-    init_pair(COLOR_MENU_ACTIVE, COLOR_WHITE, COLOR_RED);
-    bold_values.push(true);
-
-    bold_values
+    colors
 }
 
 pub fn init_curses() -> Window {
@@ -83,19 +116,10 @@ pub fn init_window(screen: &Window) -> Window {
 }
 
 // print a char or a string in given color
-fn print<T>(window: &Window, pos: (i32, i32), item: T, pair: i16, bold: bool) where T: ToString {
-    if pair != 0 {
-        window.attron(COLOR_PAIR(pair));
-        if bold {
-            window.attron(A_BOLD);
-        }
-    }
-
+fn print<T>(window: &Window, pos: (i32, i32), item: T, color: ColorWrap) where T: ToString {
+    color.enable(&window);
     window.mvaddstr(pos.1, pos.0, item.to_string());
-
-    if pair != 0 {
-        window.attrset(A_NORMAL);
-    }
+    color.disable(&window);
 }
 
 pub fn print_game(window: &Window, snake: &mechanics::Snake, fruits: &Vec<(i32, i32)>, lost: bool) {
