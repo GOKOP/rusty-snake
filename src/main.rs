@@ -9,8 +9,9 @@ mod mechanics;
 
 fn main() {
     let screen = display::init_curses();
-    let window = display::init_window(&screen);
     let colors = display::init_colors();
+    let mut window = display::init_window(&screen);
+    let mut max_yx = screen.get_max_yx();
 
     let mut main_menu = create_main_menu();
     let mut snake = mechanics::Snake::new((20, 10));
@@ -21,6 +22,8 @@ fn main() {
     let mut state = mechanics::State::MainMenu;
 
     while going {
+        display::recenter(&screen, &mut window, &mut max_yx);
+
         if state == mechanics::State::MainMenu {
             display::print_simple_menu(&window, &main_menu, &colors);
             let exec_option = main_menu.handle_input(window.getch());

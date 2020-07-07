@@ -224,3 +224,15 @@ pub fn print_simple_menu(window: &Window, menu: &interface::SimpleMenu, colors: 
 
     window.refresh();
 }
+
+pub fn recenter(screen: &Window, window: &mut Window, max_yx: &mut (i32, i32)) {
+    if screen.get_max_yx() == *max_yx {
+        return;
+    }
+
+    screen.clear();
+    screen.refresh();
+
+    *window = init_window(&screen);
+    *max_yx = screen.get_max_yx();
+}
