@@ -13,7 +13,7 @@ static COLOR_SCORE: i16 = 4;
 static COLOR_FRUIT: i16 = 5;
 static COLOR_MENU_TITLE: i16 = 6;
 static COLOR_MENU_OPTION: i16 = 7;
-static COLOR_MENU_ACTIVE: i16 = 8;
+static COLOR_MENU_SELECTED: i16 = 8;
 
 #[derive(Clone, Copy)]
 pub struct ColorWrap {
@@ -85,7 +85,7 @@ pub fn init_colors() -> Vec<ColorWrap> {
     colors.push(ColorWrap::new(COLOR_FRUIT, COLOR_RED, background, false));
     colors.push(ColorWrap::new(COLOR_MENU_TITLE, COLOR_RED, background, true));
     colors.push(ColorWrap::new(COLOR_MENU_OPTION, COLOR_WHITE, background, true));
-    colors.push(ColorWrap::new(COLOR_MENU_ACTIVE, COLOR_WHITE, COLOR_RED, true));
+    colors.push(ColorWrap::new(COLOR_MENU_SELECTED, COLOR_WHITE, COLOR_RED, true));
 
     colors
 }
@@ -179,7 +179,7 @@ fn print_border(window: &Window, ch: char, color: ColorWrap) {
     }
 }
 
-pub fn print_simple_menu(window: &Window, menu: &interface::SimpleMenu) {
+pub fn print_simple_menu(window: &Window, menu: &interface::SimpleMenu, colors: &Vec<ColorWrap>) {
     window.erase();
 
     let menu_height = (menu.options.len() + 2) as i32;
@@ -190,19 +190,32 @@ pub fn print_simple_menu(window: &Window, menu: &interface::SimpleMenu) {
     let title_width = menu.title.len() as i32;
     let title_start_x = window_width / 2 - title_width / 2;
 
-    window.mvaddstr(menu_start_y, title_start_x, &menu.title);
+    if colors.len() == 1 {
+        print(&window, (title_start_x, menu_start_y), &menu.title, colors[0]);
+    } else {
+        print(&window, (title_start_x, menu_start_y), &menu.title, colors[COLOR_MENU_TITLE as usize]);
+    }
 
     let mut y = menu_start_y + 2;
     for (index, option) in menu.options.iter().enumerate() {
-        let string: String;
 
-        if index == menu.selected {
-            string = format!("> {}", &option.text);
+        if index == menu.selected && colors.len() == 1 {
+            let string = format!("> {}", &option.text);
+            let x = window_width / 2 - ((string.len() / 2) as i32);
+            window.mvaddstr(y, x, string);
+
         } else {
-            string = option.text.clone();
+            let x = window_width / 2 - ((&option.text.len() / 2) as i32);
+
+            if index == menu.selected {
+                print(&window, (x, y), &option.text, colors[COLOR_MENU_SELECTED as usize]);
+            } else if colors.len() > 1 {
+                print(&window, (x, y), &option.text, colors[COLOR_MENU_OPTION as usize]);
+            } else {
+                window.mvaddstr(y, x, &option.text);
+            }
         }
-        let x = window_width / 2 - ((string.len() / 2) as i32);
-        window.mvaddstr(y, x, string);
+
         y += 1
     }
 

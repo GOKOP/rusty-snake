@@ -22,7 +22,7 @@ fn main() {
 
     while going {
         if state == mechanics::State::MainMenu {
-            display::print_simple_menu(&window, &main_menu);
+            display::print_simple_menu(&window, &main_menu, &colors);
             let exec_option = main_menu.handle_input(window.getch());
             if exec_option {
                 state = main_menu.options[main_menu.selected].target_state;
