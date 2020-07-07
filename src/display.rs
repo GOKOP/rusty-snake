@@ -45,7 +45,7 @@ impl ColorWrap {
             return;
         }
 
-        window.attron(COLOR_PAIR(self.pair as u32));
+        window.attron(COLOR_PAIR(self.pair as _));
         if self.bold {
             window.attron(A_BOLD);
         }
@@ -56,7 +56,7 @@ impl ColorWrap {
             return
         }
 
-        window.attroff(COLOR_PAIR(self.pair as u32));
+        window.attroff(COLOR_PAIR(self.pair as _));
         if self.bold {
             window.attroff(A_BOLD);
         }
