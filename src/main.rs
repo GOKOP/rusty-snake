@@ -6,6 +6,7 @@ const VERSION: &str = "v0.2.0";
 mod display;
 mod interface;
 mod mechanics;
+mod settings;
 
 fn main() {
     let screen = display::init_curses();
