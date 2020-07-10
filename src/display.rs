@@ -61,8 +61,156 @@ impl ColorWrap {
     }
 }
 
+pub struct Display {
+    screen: Window,
+    colors: Vec<ColorWrap>,
+    colorful: bool,
+    pub window: Window,
+    pub win_size: (i32, i32),
+    pub screen_max_yx: (i32, i32), // stored so I can check if it changed
+}
+
+impl Display {
+    pub fn new(win_size: (i32, i32)) -> Display {
+        let screen = init_curses();
+        let colors = init_colors();
+        let window = init_window(&screen, win_size);
+        let max_yx = screen.get_max_yx();
+        let colorful = colors.len() > 1;
+
+        Display {
+            screen: screen,
+            colors: colors,
+            window: window,
+            win_size: win_size,
+            screen_max_yx: max_yx,
+            colorful: colorful,
+        }
+    }
+
+    // print a char or a string in given color
+    fn print<T>(&self, pos: (i32, i32), item: T, color_index: i16)
+    where
+        T: ToString,
+    {
+        self.colors[color_index as usize].enable(&self.window);
+        self.window.mvaddstr(pos.1, pos.0, item.to_string());
+        self.colors[color_index as usize].disable(&self.window);
+    }
+
+    fn print_border(&self, ch: char, color_index: i16) {
+        let mut horizontal = String::new();
+    
+        for _ in 0..self.window.get_max_x() {
+            horizontal = format!("{}{}", horizontal, ch);
+        }
+    
+        self.print((0, 0), &horizontal, color_index);
+        self.print((0, self.window.get_max_y() - 1), &horizontal, color_index);
+    
+        for y in 1..self.window.get_max_y() - 1 {
+            self.print((0, y), ch.to_string(), color_index);
+            self.print((self.window.get_max_x() - 1, y), ch.to_string(), color_index);
+        }
+    }
+
+    pub fn print_game(&self, snake: &mechanics::Snake, fruits: &Vec<(i32, i32)>, lost: bool) {
+        let mut frame_color = 0;
+        let mut fruit_color = 0;
+        let mut snake_color = 0;
+        let mut dead_color = 0;
+        let mut score_color = 0;
+
+        if self.colorful {
+            frame_color = COLOR_FRAME;
+            fruit_color = COLOR_FRUIT;
+            snake_color = COLOR_SNAKE;
+            dead_color = COLOR_DEAD;
+            score_color = COLOR_SCORE;
+        }
+
+        self.window.erase();
+        self.print_border('█', frame_color);
+
+        for fruit in fruits {
+            self.print((fruit.0, fruit.1), '*', fruit_color);
+        }
+
+        for (index, piece) in snake.body.iter().enumerate().rev() {
+            if index == 0 && lost {
+                self.print((piece.0, piece.1), 'X', dead_color);
+            } else if index == 0 {
+                self.print((piece.0, piece.1), '@', snake_color);
+            } else {
+                self.print((piece.0, piece.1), 'o', snake_color);
+            }
+        }
+
+        // displaying body length in the corner
+        let score = format!("Body: {}", snake.body.len());
+        self.print((1, self.window.get_max_y() - 1), score, score_color);
+
+        self.window.refresh();
+    }
+
+    pub fn print_simple_menu(&self, menu: &interface::SimpleMenu) {
+        self.window.erase();
+    
+        let menu_height = (menu.options.len() + 2) as i32;
+        let window_height = self.win_size.1;
+        let menu_start_y = window_height / 2 - menu_height / 2;
+    
+        let window_width = self.win_size.0;
+        let title_width = menu.title.len() as i32;
+        let title_start_x = window_width / 2 - title_width / 2;
+    
+        if self.colorful {
+            self.print((title_start_x, menu_start_y), &menu.title, COLOR_MENU_TITLE);
+        } else {
+            self.print((title_start_x, menu_start_y), &menu.title, 0);
+        }
+    
+        let mut y = menu_start_y + 2;
+        for (index, option) in menu.options.iter().enumerate() {
+            if index == menu.selected && !self.colorful {
+                let string = format!("> {}", &option.text);
+                let x = window_width / 2 - ((string.len() / 2) as i32);
+                self.window.mvaddstr(y, x, string);
+            } else {
+                let x = window_width / 2 - ((&option.text.len() / 2) as i32);
+    
+                if index == menu.selected {
+                    self.print((x, y), &option.text, COLOR_MENU_SELECTED);
+                } else if self.colorful {
+                    self.print((x, y), &option.text, COLOR_MENU_OPTION);
+                } else {
+                    self.window.mvaddstr(y, x, &option.text);
+                }
+            }
+            y += 1
+        }
+    
+        let bottom_text_x = self.window.get_max_x() - 1 - (menu.bottom_text.len() as i32);
+        self.window.mvaddstr(self.window.get_max_y() - 1, bottom_text_x, &menu.bottom_text);
+    
+        self.window.refresh();
+    }
+
+    pub fn recenter(&mut self) {
+        if self.screen.get_max_yx() == self.screen_max_yx {
+            return;
+        }
+    
+        self.screen.clear();
+        self.screen.refresh();
+    
+        self.window = init_window(&self.screen, self.win_size);
+        self.screen_max_yx = self.screen.get_max_yx();
+    }
+}
+
 // on failure return a vector with a dummy ColorWrap
-pub fn init_colors() -> Vec<ColorWrap> {
+fn init_colors() -> Vec<ColorWrap> {
     if !has_colors() || start_color() == ERR {
         return vec![ColorWrap::new_dummy()];
     }
@@ -88,7 +236,7 @@ pub fn init_colors() -> Vec<ColorWrap> {
     colors
 }
 
-pub fn init_curses() -> Window {
+fn init_curses() -> Window {
     let screen = initscr();
     screen.keypad(true);
     screen.nodelay(true);
@@ -97,7 +245,7 @@ pub fn init_curses() -> Window {
     screen
 }
 
-pub fn init_window(screen: &Window, size: (i32, i32)) -> Window {
+fn init_window(screen: &Window, size: (i32, i32)) -> Window {
     let screen_size = screen.get_max_yx();
     let window = screen
         .subwin(
@@ -114,155 +262,5 @@ pub fn init_window(screen: &Window, size: (i32, i32)) -> Window {
     window
 }
 
-// print a char or a string in given color
-fn print<T>(window: &Window, pos: (i32, i32), item: T, color: ColorWrap)
-where
-    T: ToString,
-{
-    color.enable(&window);
-    window.mvaddstr(pos.1, pos.0, item.to_string());
-    color.disable(&window);
-}
 
-pub fn print_game(
-    window: &Window,
-    snake: &mechanics::Snake,
-    fruits: &Vec<(i32, i32)>,
-    lost: bool,
-    colors: &Vec<ColorWrap>,
-) {
-    let mut frame_color = colors[0];
-    let mut fruit_color = colors[0];
-    let mut snake_color = colors[0];
-    let mut dead_color = colors[0];
-    let mut score_color = colors[0];
 
-    if colors.len() > 1 {
-        frame_color = colors[COLOR_FRAME as usize];
-        fruit_color = colors[COLOR_FRUIT as usize];
-        snake_color = colors[COLOR_SNAKE as usize];
-        dead_color = colors[COLOR_DEAD as usize];
-        score_color = colors[COLOR_SCORE as usize];
-    }
-
-    window.erase();
-    print_border(&window, '█', frame_color);
-
-    for fruit in fruits {
-        print(&window, (fruit.0, fruit.1), '*', fruit_color);
-    }
-
-    for (index, piece) in snake.body.iter().enumerate().rev() {
-        if index == 0 && lost {
-            print(&window, (piece.0, piece.1), 'X', dead_color);
-        } else if index == 0 {
-            print(&window, (piece.0, piece.1), '@', snake_color);
-        } else {
-            print(&window, (piece.0, piece.1), 'o', snake_color);
-        }
-    }
-
-    // displaying body length in the corner
-    let score = format!("Body: {}", snake.body.len());
-    print(&window, (1, window.get_max_y() - 1), score, score_color);
-
-    window.refresh();
-}
-
-/// print window border
-fn print_border(window: &Window, ch: char, color: ColorWrap) {
-    let mut horizontal = String::new();
-
-    for _ in 0..window.get_max_x() {
-        horizontal = format!("{}{}", horizontal, ch);
-    }
-
-    print(&window, (0, 0), &horizontal, color);
-    print(&window, (0, window.get_max_y() - 1), &horizontal, color);
-
-    for y in 1..window.get_max_y() - 1 {
-        print(&window, (0, y), ch.to_string(), color);
-        print(&window, (window.get_max_x() - 1, y), ch.to_string(), color);
-    }
-}
-
-pub fn print_simple_menu(window: &Window, menu: &interface::SimpleMenu, colors: &Vec<ColorWrap>) {
-    window.erase();
-
-    let menu_height = (menu.options.len() + 2) as i32;
-    let window_height = window.get_max_y();
-    let menu_start_y = window_height / 2 - menu_height / 2;
-
-    let window_width = window.get_max_x();
-    let title_width = menu.title.len() as i32;
-    let title_start_x = window_width / 2 - title_width / 2;
-
-    if colors.len() == 1 {
-        print(
-            &window,
-            (title_start_x, menu_start_y),
-            &menu.title,
-            colors[0],
-        );
-    } else {
-        print(
-            &window,
-            (title_start_x, menu_start_y),
-            &menu.title,
-            colors[COLOR_MENU_TITLE as usize],
-        );
-    }
-
-    let mut y = menu_start_y + 2;
-    for (index, option) in menu.options.iter().enumerate() {
-        if index == menu.selected && colors.len() == 1 {
-            let string = format!("> {}", &option.text);
-            let x = window_width / 2 - ((string.len() / 2) as i32);
-            window.mvaddstr(y, x, string);
-        } else {
-            let x = window_width / 2 - ((&option.text.len() / 2) as i32);
-
-            if index == menu.selected {
-                print(
-                    &window,
-                    (x, y),
-                    &option.text,
-                    colors[COLOR_MENU_SELECTED as usize],
-                );
-            } else if colors.len() > 1 {
-                print(
-                    &window,
-                    (x, y),
-                    &option.text,
-                    colors[COLOR_MENU_OPTION as usize],
-                );
-            } else {
-                window.mvaddstr(y, x, &option.text);
-            }
-        }
-
-        y += 1
-    }
-
-    let bottom_text_x = window.get_max_x() - 1 - (menu.bottom_text.len() as i32);
-    window.mvaddstr(window.get_max_y() - 1, bottom_text_x, &menu.bottom_text);
-
-    window.refresh();
-}
-
-pub fn recenter(
-    screen: &Window,
-    window: &mut Window,
-    max_yx: &mut (i32, i32),
-    win_size: (i32, i32),
-) {
-    if screen.get_max_yx() == *max_yx {
-        return;
-    }
-
-    screen.clear();
-    screen.refresh();
-
-    *window = init_window(&screen, win_size);
-    *max_yx = screen.get_max_yx();
-}
