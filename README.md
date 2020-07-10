@@ -7,6 +7,7 @@ Stuff that I want to make but neither snake has it yet:
 
 ## Compiling
 Make sure you have Rust toolchain installed and run `cargo build --release`.
+You will also need ncurses installed if on Linux.
 
 ### Windows
 This program uses pancurses Rust library which uses pdcurses C library in the backend on Windows.
