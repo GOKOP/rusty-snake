@@ -24,7 +24,7 @@ fn main() {
         loaded_settings.snake_len,
     );
     let mut fruit_manager = mechanics::FruitManager::new();
-    new_fruit_wrapper(window.get_max_yx(), &snake, &mut fruit_manager);
+    new_fruit_xy(window.get_max_yx(), &snake, &mut fruit_manager);
 
     let mut going = true;
     let mut state = mechanics::State::MainMenu;
@@ -54,7 +54,7 @@ fn main() {
                 || fruit_manager.fruits.len() < loaded_settings.min_fruits
             {
                 snake.growth += 1;
-                new_fruit_wrapper(window.get_max_yx(), &snake, &mut fruit_manager);
+                new_fruit_xy(window.get_max_yx(), &snake, &mut fruit_manager);
             }
         } else if state == mechanics::State::Lost {
             display::print_game(&window, &snake, &fruit_manager.fruits, true, &colors);
@@ -67,7 +67,7 @@ fn main() {
                 loaded_settings.snake_len,
             );
             fruit_manager = mechanics::FruitManager::new();
-            new_fruit_wrapper(window.get_max_yx(), &snake, &mut fruit_manager);
+            new_fruit_xy(window.get_max_yx(), &snake, &mut fruit_manager);
             flush_input(&window);
             state = mechanics::State::MainMenu;
         } else if state == mechanics::State::Quit {
@@ -88,7 +88,7 @@ fn handle_input(window: &Window, snake: &mut mechanics::Snake, state: &mut mecha
     }
 }
 
-fn new_fruit_wrapper(
+fn new_fruit_xy(
     max_yx: (i32, i32),
     snake: &mechanics::Snake,
     fruit_manager: &mut mechanics::FruitManager,
