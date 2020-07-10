@@ -22,25 +22,25 @@ pub fn create() -> Vec<Setting> {
     vec![
         Setting {
             name: "window-size".to_string(),
-            help: "size of the window where X and Y are positive integers".to_string(),
+            help: "Size of the window where X and Y are positive integers.".to_string(),
             short: 'w',
             value_name: "XxY".to_string(),
         },
         Setting {
             name: "speed".to_string(),
-            help: "Speed of the snake. Can be a number between <1,4> or a number of milliseconds between game updates (appended with \"ms\")".to_string(),
+            help: "Speed of the snake. Can be a number between <1,4> or a number of milliseconds between game updates (appended with \"ms\").".to_string(),
             short: 's',
             value_name: "s".to_string(),
         },
         Setting {
             name: "fruits".to_string(),
-            help: "Number of fruits to exist at one time. Must be a positive integer".to_string(),
+            help: "Number of fruits to exist at one time. Must be a positive integer.".to_string(),
             short: 'f',
             value_name: "fruits".to_string(),
         },
         Setting {
             name: "length".to_string(),
-            help: "Length of the snake. Must be a positive integer".to_string(),
+            help: "Initial length of the snake. Must be a positive integer.".to_string(),
             short: 'l',
             value_name: "length".to_string(),
         }
