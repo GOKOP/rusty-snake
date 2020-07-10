@@ -83,12 +83,12 @@ impl SimpleMenu {
     }
 }
 
-fn create_main_menu() -> SimpleMenu {
+pub fn create_main_menu() -> SimpleMenu {
     let mut options = Vec::new();
 
     options.push(MenuOption::new(
         "Play".to_string(),
-        mechanics::State::Game,
+        State::Game,
     ));
     options.push(MenuOption::new(
         "Exit".to_string(),
