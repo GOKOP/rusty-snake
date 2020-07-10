@@ -7,6 +7,7 @@ pub struct Setting {
     pub name: String,
     pub help: String,
     pub short: char,
+    pub value_name: String, // displayed in CLI help
 }
 
 pub struct LoadedSettings {
@@ -17,8 +18,9 @@ pub fn create() -> Vec<Setting> {
     vec![
         Setting {
             name: "window-size".to_string(),
-            help: "size of the window in the formt of XxY where X and Y are positive integers".to_string(),
+            help: "size of the window where X and Y are positive integers".to_string(),
             short: 'w',
+            value_name: "XxY".to_string(),
         }
     ]
 }
@@ -36,6 +38,7 @@ pub fn read_cli_args(settings: &Vec<Setting>) -> LoadedSettings {
                 .long(&setting.name)
                 .short(&setting.short.to_string())
                 .takes_value(true)
+                .value_name(&setting.value_name)
         );
     }
 
