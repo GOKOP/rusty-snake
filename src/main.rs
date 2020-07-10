@@ -39,7 +39,7 @@ fn main() {
             handle_input(&window, &mut snake, &mut state);
             snake.advance();
             display::print_game(&window, &snake, &fruit_manager.fruits, false, &colors);
-            thread::sleep(time::Duration::from_millis(50));
+            thread::sleep(time::Duration::from_millis(loaded_settings.snake_wait));
 
             if mechanics::check_if_lost(window.get_max_yx(), &snake) {
                 state = mechanics::State::Lost;

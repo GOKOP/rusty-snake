@@ -12,6 +12,7 @@ pub struct Setting {
 
 pub struct LoadedSettings {
     pub win_size: (i32, i32),
+    pub snake_wait: u64,
 }
 
 pub fn create() -> Vec<Setting> {
@@ -21,6 +22,12 @@ pub fn create() -> Vec<Setting> {
             help: "size of the window where X and Y are positive integers".to_string(),
             short: 'w',
             value_name: "XxY".to_string(),
+        },
+        Setting {
+            name: "speed".to_string(),
+            help: "Speed of the snake. Can be a number between <1,4> or a number of milliseconds between game updates (appended with \"ms\")".to_string(),
+            short: 's',
+            value_name: "s".to_string(),
         }
     ]
 }
@@ -47,8 +54,12 @@ pub fn read_cli_args(settings: &Vec<Setting>) -> LoadedSettings {
     let win_size_string = matches.value_of("window-size").unwrap_or("40x20");
     let win_size = read_window_size(win_size_string);
 
+    let speed_string = matches.value_of("speed").unwrap_or("2");
+    let speed = read_speed(speed_string);
+
     LoadedSettings {
         win_size: win_size,
+        snake_wait: speed,
     }
 }
 
@@ -91,4 +102,25 @@ fn read_window_size(input: &str) -> (i32, i32) {
     }
 
     (size[0], size[1])
+}
+
+fn read_speed(input: &str) -> u64 {
+    let error_pref = "Wrong snake speed:";
+
+    let num = input.trim_end_matches("ms");
+    if num == input { // no "ms"
+        match num {
+            "1" => return 150,
+            "2" => return 100,
+            "3" => return 50,
+            "4" => return 30,
+            _ => wrong_arg(format!("{} unknown predefined speed. Try 1, 2, 3 or 4.", error_pref)),
+        }
+    } else {
+        match num.parse::<u64>() {
+             Ok(v) => return v,
+             Err(_) => wrong_arg(format!("{} not a number, too high or negative", error_pref)),
+        }
+    }
+    0
 }
