@@ -1,3 +1,4 @@
+use clap::crate_version;
 use crate::mechanics::State;
 use pancurses::Input;
 
@@ -81,3 +82,23 @@ impl SimpleMenu {
         false
     }
 }
+
+fn create_main_menu() -> SimpleMenu {
+    let mut options = Vec::new();
+
+    options.push(MenuOption::new(
+        "Play".to_string(),
+        mechanics::State::Game,
+    ));
+    options.push(MenuOption::new(
+        "Exit".to_string(),
+        State::Quit,
+    ));
+
+    SimpleMenu::new(
+        "Rusty Snake".to_string(),
+        crate_version!().to_string(),
+        options,
+    )
+}
+

@@ -1,4 +1,3 @@
-use clap::crate_version;
 use pancurses::{endwin, Input, Window};
 use std::{thread, time};
 
@@ -16,7 +15,7 @@ fn main() {
     let mut window = display::init_window(&screen, loaded_settings.win_size);
     let mut max_yx = screen.get_max_yx();
 
-    let mut main_menu = create_main_menu();
+    let mut main_menu = interface::create_main_menu();
     let mut snake = mechanics::Snake::new(
         (
             loaded_settings.win_size.0 / 2,
@@ -87,25 +86,6 @@ fn handle_input(window: &Window, snake: &mut mechanics::Snake, state: &mut mecha
         Some(Input::KeyLeft) => snake.turn(mechanics::Direction::Left),
         _ => (),
     }
-}
-
-fn create_main_menu() -> interface::SimpleMenu {
-    let mut options = Vec::new();
-
-    options.push(interface::MenuOption::new(
-        "Play".to_string(),
-        mechanics::State::Game,
-    ));
-    options.push(interface::MenuOption::new(
-        "Exit".to_string(),
-        mechanics::State::Quit,
-    ));
-
-    interface::SimpleMenu::new(
-        "Rusty Snake".to_string(),
-        crate_version!().to_string(),
-        options,
-    )
 }
 
 fn new_fruit_wrapper(
