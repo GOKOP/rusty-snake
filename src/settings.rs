@@ -1,7 +1,19 @@
 // Note that this is *not* a suckless-style config file
 // It's just a module dealing with settings logic
+// default values are however defined here
 
 use clap::{Arg, App, crate_version};
+
+const SPEED1: u64 = 150;
+const SPEED2: u64 = 100;
+const SPEED3: u64 = 50;
+const SPEED4: u64 = 30;
+
+// default config in strings because it's used while unwrapping user cli input
+const DEF_WINDOW: &str = "40x20";
+const DEF_SPEED: &str = "2";
+const DEF_FRUITS: &str = "1";
+const DEF_LENGTH: &str = "3";
 
 pub struct Setting {
     pub name: String,
@@ -66,16 +78,16 @@ pub fn read_cli_args(settings: &Vec<Setting>) -> LoadedSettings {
 
     let matches = app.get_matches();
 
-    let win_size_string = matches.value_of("window-size").unwrap_or("40x20");
+    let win_size_string = matches.value_of("window-size").unwrap_or(DEF_WINDOW);
     let win_size = read_window_size(win_size_string);
 
-    let speed_string = matches.value_of("speed").unwrap_or("2");
+    let speed_string = matches.value_of("speed").unwrap_or(DEF_SPEED);
     let speed = read_speed(speed_string);
 
-    let fruits_string = matches.value_of("fruits").unwrap_or("1");
+    let fruits_string = matches.value_of("fruits").unwrap_or(DEF_FRUITS);
     let fruits = read_fruits(fruits_string);
 
-    let length_string = matches.value_of("length").unwrap_or("3");
+    let length_string = matches.value_of("length").unwrap_or(DEF_LENGTH);
     let length = read_length(length_string);
 
     LoadedSettings {
@@ -133,10 +145,10 @@ fn read_speed(input: &str) -> u64 {
     let num = input.trim_end_matches("ms");
     if num == input { // no "ms"
         match num {
-            "1" => return 150,
-            "2" => return 100,
-            "3" => return 50,
-            "4" => return 30,
+            "1" => return SPEED1,
+            "2" => return SPEED2,
+            "3" => return SPEED3,
+            "4" => return SPEED4,
             _ => wrong_arg(format!("{} unknown predefined speed. Try 1, 2, 3 or 4.", error_pref)),
         }
     } else {
