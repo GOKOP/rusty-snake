@@ -1,4 +1,5 @@
 use rand::Rng;
+use pancurses::{Window, Input};
 
 #[derive(PartialEq, Clone, Copy)]
 pub enum State {
@@ -161,3 +162,15 @@ pub fn check_if_lost(max_pos: (i32, i32), snake: &Snake) -> bool {
 
     false
 }
+
+pub fn handle_input(window: &Window, snake: &mut Snake, state: &mut State) {
+    match window.getch() {
+        Some(Input::Character('q')) => *state = State::MainMenu,
+        Some(Input::KeyUp) => snake.turn(Direction::Up),
+        Some(Input::KeyDown) => snake.turn(Direction::Down),
+        Some(Input::KeyRight) => snake.turn(Direction::Right),
+        Some(Input::KeyLeft) => snake.turn(Direction::Left),
+        _ => (),
+    }
+}
+

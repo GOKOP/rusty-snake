@@ -1,4 +1,4 @@
-use pancurses::{endwin, Input, Window};
+use pancurses::{endwin, Window};
 use std::{thread, time};
 
 mod display;
@@ -35,7 +35,7 @@ fn main() {
         if state == mechanics::State::MainMenu {
             simple_menu_logic(&mut main_menu, &window, &colors, &mut state);
         } else if state == mechanics::State::Game {
-            handle_input(&window, &mut snake, &mut state);
+            mechanics::handle_input(&window, &mut snake, &mut state);
             snake.advance();
             display::print_game(&window, &snake, &fruit_manager.fruits, false, &colors);
             thread::sleep(time::Duration::from_millis(loaded_settings.snake_wait));
@@ -69,17 +69,6 @@ fn main() {
         }
     }
     endwin();
-}
-
-fn handle_input(window: &Window, snake: &mut mechanics::Snake, state: &mut mechanics::State) {
-    match window.getch() {
-        Some(Input::Character('q')) => *state = mechanics::State::MainMenu,
-        Some(Input::KeyUp) => snake.turn(mechanics::Direction::Up),
-        Some(Input::KeyDown) => snake.turn(mechanics::Direction::Down),
-        Some(Input::KeyRight) => snake.turn(mechanics::Direction::Right),
-        Some(Input::KeyLeft) => snake.turn(mechanics::Direction::Left),
-        _ => (),
-    }
 }
 
 fn new_fruit_xy(
