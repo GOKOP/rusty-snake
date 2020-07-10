@@ -1,7 +1,6 @@
 use pancurses::{endwin, Input, Window};
 use std::{thread, time};
-
-const VERSION: &str = "v0.2.0";
+use clap::crate_version;
 
 mod display;
 mod interface;
@@ -88,7 +87,7 @@ fn create_main_menu() -> interface::SimpleMenu {
         mechanics::State::Quit,
     ));
 
-    interface::SimpleMenu::new("Rusty Snake".to_string(), VERSION.to_string(), options)
+    interface::SimpleMenu::new("Rusty Snake".to_string(), crate_version!().to_string(), options)
 }
 
 fn new_fruit_wrapper(
