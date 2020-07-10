@@ -31,15 +31,9 @@ fn main() {
 
     while going {
         display::recenter(&screen, &mut window, &mut max_yx, loaded_settings.win_size);
-
+            
         if state == mechanics::State::MainMenu {
-            display::print_simple_menu(&window, &main_menu, &colors);
-            let exec_option = main_menu.handle_input(window.getch());
-            if exec_option {
-                state = main_menu.options[main_menu.selected].target_state;
-            }
-            // don't waste cpu on refreshing this
-            thread::sleep(time::Duration::from_millis(10));
+            simple_menu_logic(&mut main_menu, &window, &colors, &mut state);
         } else if state == mechanics::State::Game {
             handle_input(&window, &mut snake, &mut state);
             snake.advance();
@@ -101,4 +95,14 @@ fn flush_input(window: &Window) {
     while let Some(_) = window.getch() {
         // do nothing
     }
+}
+
+fn simple_menu_logic(menu: &mut interface::SimpleMenu, window: &Window, colors: &Vec<display::ColorWrap>, state: &mut mechanics::State) {
+    if menu.handle_input(window.getch()) {
+        *state = menu.options[menu.selected].target_state;
+    }
+    display::print_simple_menu(&window, &menu, &colors);
+
+    // don't waste cpu on refreshing this
+    thread::sleep(time::Duration::from_millis(10));
 }
