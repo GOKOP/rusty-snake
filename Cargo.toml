@@ -6,6 +6,7 @@ edition = "2018"
 
 [dependencies]
 rand = "0.7"
+clap = "2.32"
 
 [dependencies.pancurses]
 version = "0.16"

@@ -2,9 +2,6 @@ use crate::interface;
 use crate::mechanics;
 use pancurses::*;
 
-const DEF_WIDTH: i32 = 40;
-const DEF_HEIGHT: i32 = 20;
-
 // which color pair is used for what
 const COLOR_SNAKE: i16 = 1;
 const COLOR_DEAD: i16 = 2;
@@ -100,14 +97,14 @@ pub fn init_curses() -> Window {
     screen
 }
 
-pub fn init_window(screen: &Window) -> Window {
+pub fn init_window(screen: &Window, size: (i32, i32)) -> Window {
     let screen_size = screen.get_max_yx();
     let window = screen
         .subwin(
-            DEF_HEIGHT,
-            DEF_WIDTH,
-            (screen_size.0 / 2) - (DEF_HEIGHT / 2),
-            (screen_size.1 / 2) - (DEF_WIDTH / 2),
+            size.1,
+            size.0,
+            (screen_size.0 / 2) - (size.1 / 2),
+            (screen_size.1 / 2) - (size.0 / 2),
         )
         .expect("Can't create subwindow");
 
@@ -226,7 +223,7 @@ pub fn print_simple_menu(window: &Window, menu: &interface::SimpleMenu, colors: 
     window.refresh();
 }
 
-pub fn recenter(screen: &Window, window: &mut Window, max_yx: &mut (i32, i32)) {
+pub fn recenter(screen: &Window, window: &mut Window, max_yx: &mut (i32, i32), win_size: (i32, i32)) {
     if screen.get_max_yx() == *max_yx {
         return;
     }
@@ -234,6 +231,6 @@ pub fn recenter(screen: &Window, window: &mut Window, max_yx: &mut (i32, i32)) {
     screen.clear();
     screen.refresh();
 
-    *window = init_window(&screen);
+    *window = init_window(&screen, win_size);
     *max_yx = screen.get_max_yx();
 }

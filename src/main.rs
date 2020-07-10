@@ -9,9 +9,12 @@ mod mechanics;
 mod settings;
 
 fn main() {
+    let settings = settings::create();
+    let loaded_settings = settings::read_cli_args(&settings);
+
     let screen = display::init_curses();
     let colors = display::init_colors();
-    let mut window = display::init_window(&screen);
+    let mut window = display::init_window(&screen, loaded_settings.win_size);
     let mut max_yx = screen.get_max_yx();
 
     let mut main_menu = create_main_menu();
@@ -23,7 +26,7 @@ fn main() {
     let mut state = mechanics::State::MainMenu;
 
     while going {
-        display::recenter(&screen, &mut window, &mut max_yx);
+        display::recenter(&screen, &mut window, &mut max_yx, loaded_settings.win_size);
 
         if state == mechanics::State::MainMenu {
             display::print_simple_menu(&window, &main_menu, &colors);
