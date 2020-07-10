@@ -45,7 +45,7 @@ fn main() {
                 state = mechanics::State::Lost;
             }
 
-            if fruit_manager.fruit_eaten(&snake) {
+            if fruit_manager.fruit_eaten(&snake) || fruit_manager.fruits.len() < loaded_settings.min_fruits {
                 snake.growth += 1;
                 new_fruit_wrapper(window.get_max_yx(), &snake, &mut fruit_manager);
             }

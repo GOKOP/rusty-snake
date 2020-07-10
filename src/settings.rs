@@ -10,9 +10,11 @@ pub struct Setting {
     pub value_name: String, // displayed in CLI help
 }
 
+// types appropriate for where they're used
 pub struct LoadedSettings {
     pub win_size: (i32, i32),
     pub snake_wait: u64,
+    pub min_fruits: usize,
 }
 
 pub fn create() -> Vec<Setting> {
@@ -28,6 +30,12 @@ pub fn create() -> Vec<Setting> {
             help: "Speed of the snake. Can be a number between <1,4> or a number of milliseconds between game updates (appended with \"ms\")".to_string(),
             short: 's',
             value_name: "s".to_string(),
+        },
+        Setting {
+            name: "fruits".to_string(),
+            help: "Number of fruits to exist at one time. Must be a positive integer".to_string(),
+            short: 'f',
+            value_name: "fruits".to_string(),
         }
     ]
 }
@@ -57,9 +65,13 @@ pub fn read_cli_args(settings: &Vec<Setting>) -> LoadedSettings {
     let speed_string = matches.value_of("speed").unwrap_or("2");
     let speed = read_speed(speed_string);
 
+    let fruits_string = matches.value_of("fruits").unwrap_or("1");
+    let fruits = read_fruits(fruits_string);
+
     LoadedSettings {
         win_size: win_size,
         snake_wait: speed,
+        min_fruits: fruits,
     }
 }
 
@@ -121,6 +133,16 @@ fn read_speed(input: &str) -> u64 {
              Ok(v) => return v,
              Err(_) => wrong_arg(format!("{} not a number, too high or negative", error_pref)),
         }
+    }
+    0
+}
+
+fn read_fruits(input: &str) -> usize {
+    let error_pref = "Wrong fruit number:";
+
+    match input.parse::<usize>() {
+        Ok(v) => return v,
+        Err(_) => wrong_arg(format!("{} not a number, negative or too high", error_pref)),
     }
     0
 }
