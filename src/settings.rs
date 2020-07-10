@@ -2,7 +2,7 @@
 // It's just a module dealing with settings logic
 // default values are however defined here
 
-use clap::{Arg, App, crate_version};
+use clap::{crate_version, App, Arg};
 
 const SPEED1: u64 = 150;
 const SPEED2: u64 = 100;
@@ -72,7 +72,7 @@ pub fn read_cli_args(settings: &Vec<Setting>) -> LoadedSettings {
                 .long(&setting.name)
                 .short(&setting.short.to_string())
                 .takes_value(true)
-                .value_name(&setting.value_name)
+                .value_name(&setting.value_name),
         );
     }
 
@@ -111,7 +111,8 @@ fn read_window_size(input: &str) -> (i32, i32) {
 
     let nums: Vec<&str> = input.split('x').collect();
 
-    if nums[0] == input { // there was no 'x'
+    if nums[0] == input {
+        // there was no 'x'
         wrong_arg(format!("{} no 'x' present", error_pref));
     }
 
@@ -119,7 +120,7 @@ fn read_window_size(input: &str) -> (i32, i32) {
 
     for (index, num) in nums.iter().enumerate() {
         let value_name: &str;
-        
+
         if index == 0 {
             value_name = "x";
         } else {
@@ -128,7 +129,10 @@ fn read_window_size(input: &str) -> (i32, i32) {
 
         match num.parse::<i32>() {
             Ok(v) => size[index] = v,
-            Err(_) => wrong_arg(format!("{} value {} is not a number or too high", error_pref, value_name)),
+            Err(_) => wrong_arg(format!(
+                "{} value {} is not a number or too high",
+                error_pref, value_name
+            )),
         }
 
         if size[index] <= 0 {
@@ -143,18 +147,22 @@ fn read_speed(input: &str) -> u64 {
     let error_pref = "Wrong snake speed:";
 
     let num = input.trim_end_matches("ms");
-    if num == input { // no "ms"
+    if num == input {
+        // no "ms"
         match num {
             "1" => return SPEED1,
             "2" => return SPEED2,
             "3" => return SPEED3,
             "4" => return SPEED4,
-            _ => wrong_arg(format!("{} unknown predefined speed. Try 1, 2, 3 or 4.", error_pref)),
+            _ => wrong_arg(format!(
+                "{} unknown predefined speed. Try 1, 2, 3 or 4.",
+                error_pref
+            )),
         }
     } else {
         match num.parse::<u64>() {
-             Ok(v) => return v,
-             Err(_) => wrong_arg(format!("{} not a number, too high or negative", error_pref)),
+            Ok(v) => return v,
+            Err(_) => wrong_arg(format!("{} not a number, too high or negative", error_pref)),
         }
     }
     0
@@ -163,7 +171,7 @@ fn read_speed(input: &str) -> u64 {
 fn read_fruits(input: &str) -> usize {
     match input.parse::<usize>() {
         Ok(v) => return v,
-        Err(_) => wrong_arg("Wrong fruit number: not a number, negative or too high"),
+        Err(_) => wrong_arg("Wrong fruit number: not a number, negative or too high".to_string()),
     }
     0
 }
@@ -171,7 +179,7 @@ fn read_fruits(input: &str) -> usize {
 fn read_length(input: &str) -> u32 {
     match input.parse::<u32>() {
         Ok(v) => return v,
-        Err(_) => wrong_arg(format!("Wrong snake length: not a number, negative or too high"),
+        Err(_) => wrong_arg("Wrong snake length: not a number, negative or too high".to_string()),
     }
     0
 }

@@ -51,7 +51,7 @@ impl ColorWrap {
 
     fn disable(&self, window: &Window) {
         if self.dummy {
-            return
+            return;
         }
 
         window.attroff(COLOR_PAIR(self.pair as _));
@@ -115,13 +115,22 @@ pub fn init_window(screen: &Window, size: (i32, i32)) -> Window {
 }
 
 // print a char or a string in given color
-fn print<T>(window: &Window, pos: (i32, i32), item: T, color: ColorWrap) where T: ToString {
+fn print<T>(window: &Window, pos: (i32, i32), item: T, color: ColorWrap)
+where
+    T: ToString,
+{
     color.enable(&window);
     window.mvaddstr(pos.1, pos.0, item.to_string());
     color.disable(&window);
 }
 
-pub fn print_game(window: &Window, snake: &mechanics::Snake, fruits: &Vec<(i32, i32)>, lost: bool, colors: &Vec<ColorWrap>) {
+pub fn print_game(
+    window: &Window,
+    snake: &mechanics::Snake,
+    fruits: &Vec<(i32, i32)>,
+    lost: bool,
+    colors: &Vec<ColorWrap>,
+) {
     let mut frame_color = colors[0];
     let mut fruit_color = colors[0];
     let mut snake_color = colors[0];
@@ -189,26 +198,44 @@ pub fn print_simple_menu(window: &Window, menu: &interface::SimpleMenu, colors: 
     let title_start_x = window_width / 2 - title_width / 2;
 
     if colors.len() == 1 {
-        print(&window, (title_start_x, menu_start_y), &menu.title, colors[0]);
+        print(
+            &window,
+            (title_start_x, menu_start_y),
+            &menu.title,
+            colors[0],
+        );
     } else {
-        print(&window, (title_start_x, menu_start_y), &menu.title, colors[COLOR_MENU_TITLE as usize]);
+        print(
+            &window,
+            (title_start_x, menu_start_y),
+            &menu.title,
+            colors[COLOR_MENU_TITLE as usize],
+        );
     }
 
     let mut y = menu_start_y + 2;
     for (index, option) in menu.options.iter().enumerate() {
-
         if index == menu.selected && colors.len() == 1 {
             let string = format!("> {}", &option.text);
             let x = window_width / 2 - ((string.len() / 2) as i32);
             window.mvaddstr(y, x, string);
-
         } else {
             let x = window_width / 2 - ((&option.text.len() / 2) as i32);
 
             if index == menu.selected {
-                print(&window, (x, y), &option.text, colors[COLOR_MENU_SELECTED as usize]);
+                print(
+                    &window,
+                    (x, y),
+                    &option.text,
+                    colors[COLOR_MENU_SELECTED as usize],
+                );
             } else if colors.len() > 1 {
-                print(&window, (x, y), &option.text, colors[COLOR_MENU_OPTION as usize]);
+                print(
+                    &window,
+                    (x, y),
+                    &option.text,
+                    colors[COLOR_MENU_OPTION as usize],
+                );
             } else {
                 window.mvaddstr(y, x, &option.text);
             }
@@ -223,7 +250,12 @@ pub fn print_simple_menu(window: &Window, menu: &interface::SimpleMenu, colors: 
     window.refresh();
 }
 
-pub fn recenter(screen: &Window, window: &mut Window, max_yx: &mut (i32, i32), win_size: (i32, i32)) {
+pub fn recenter(
+    screen: &Window,
+    window: &mut Window,
+    max_yx: &mut (i32, i32),
+    win_size: (i32, i32),
+) {
     if screen.get_max_yx() == *max_yx {
         return;
     }

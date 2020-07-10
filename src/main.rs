@@ -1,6 +1,6 @@
+use clap::crate_version;
 use pancurses::{endwin, Input, Window};
 use std::{thread, time};
-use clap::crate_version;
 
 mod display;
 mod interface;
@@ -17,7 +17,13 @@ fn main() {
     let mut max_yx = screen.get_max_yx();
 
     let mut main_menu = create_main_menu();
-    let mut snake = mechanics::Snake::new((loaded_settings.win_size.0/2, loaded_settings.win_size.1/2), loaded_settings.snake_len);
+    let mut snake = mechanics::Snake::new(
+        (
+            loaded_settings.win_size.0 / 2,
+            loaded_settings.win_size.1 / 2,
+        ),
+        loaded_settings.snake_len,
+    );
     let mut fruit_manager = mechanics::FruitManager::new();
     new_fruit_wrapper(window.get_max_yx(), &snake, &mut fruit_manager);
 
@@ -45,14 +51,22 @@ fn main() {
                 state = mechanics::State::Lost;
             }
 
-            if fruit_manager.fruit_eaten(&snake) || fruit_manager.fruits.len() < loaded_settings.min_fruits {
+            if fruit_manager.fruit_eaten(&snake)
+                || fruit_manager.fruits.len() < loaded_settings.min_fruits
+            {
                 snake.growth += 1;
                 new_fruit_wrapper(window.get_max_yx(), &snake, &mut fruit_manager);
             }
         } else if state == mechanics::State::Lost {
             display::print_game(&window, &snake, &fruit_manager.fruits, true, &colors);
             thread::sleep(time::Duration::from_millis(1000));
-            snake = mechanics::Snake::new((loaded_settings.win_size.0/2, loaded_settings.win_size.1/2), loaded_settings.snake_len);
+            snake = mechanics::Snake::new(
+                (
+                    loaded_settings.win_size.0 / 2,
+                    loaded_settings.win_size.1 / 2,
+                ),
+                loaded_settings.snake_len,
+            );
             fruit_manager = mechanics::FruitManager::new();
             new_fruit_wrapper(window.get_max_yx(), &snake, &mut fruit_manager);
             flush_input(&window);
@@ -87,7 +101,11 @@ fn create_main_menu() -> interface::SimpleMenu {
         mechanics::State::Quit,
     ));
 
-    interface::SimpleMenu::new("Rusty Snake".to_string(), crate_version!().to_string(), options)
+    interface::SimpleMenu::new(
+        "Rusty Snake".to_string(),
+        crate_version!().to_string(),
+        options,
+    )
 }
 
 fn new_fruit_wrapper(
