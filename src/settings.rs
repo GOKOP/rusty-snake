@@ -15,6 +15,7 @@ pub struct LoadedSettings {
     pub win_size: (i32, i32),
     pub snake_wait: u64,
     pub min_fruits: usize,
+    pub snake_len: u32,
 }
 
 pub fn create() -> Vec<Setting> {
@@ -36,6 +37,12 @@ pub fn create() -> Vec<Setting> {
             help: "Number of fruits to exist at one time. Must be a positive integer".to_string(),
             short: 'f',
             value_name: "fruits".to_string(),
+        },
+        Setting {
+            name: "length".to_string(),
+            help: "Length of the snake. Must be a positive integer".to_string(),
+            short: 'l',
+            value_name: "length".to_string(),
         }
     ]
 }
@@ -68,10 +75,14 @@ pub fn read_cli_args(settings: &Vec<Setting>) -> LoadedSettings {
     let fruits_string = matches.value_of("fruits").unwrap_or("1");
     let fruits = read_fruits(fruits_string);
 
+    let length_string = matches.value_of("length").unwrap_or("3");
+    let length = read_length(length_string);
+
     LoadedSettings {
         win_size: win_size,
         snake_wait: speed,
         min_fruits: fruits,
+        snake_len: length,
     }
 }
 
@@ -141,6 +152,16 @@ fn read_fruits(input: &str) -> usize {
     let error_pref = "Wrong fruit number:";
 
     match input.parse::<usize>() {
+        Ok(v) => return v,
+        Err(_) => wrong_arg(format!("{} not a number, negative or too high", error_pref)),
+    }
+    0
+}
+
+fn read_length(input: &str) -> u32 {
+    let error_pref = "Wrong snake length:";
+
+    match input.parse::<u32>() {
         Ok(v) => return v,
         Err(_) => wrong_arg(format!("{} not a number, negative or too high", error_pref)),
     }

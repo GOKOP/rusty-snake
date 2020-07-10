@@ -24,11 +24,11 @@ pub struct Snake {
 
 impl Snake {
     /// Creates new snake in the given position, pointing to the right
-    pub fn new(position: (i32, i32)) -> Snake {
+    pub fn new(position: (i32, i32), size: u32) -> Snake {
         Snake {
             body: vec![position],
             direction: Direction::Up,
-            growth: 3,
+            growth: size,
         }
     }
 
