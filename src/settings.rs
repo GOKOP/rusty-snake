@@ -149,21 +149,17 @@ fn read_speed(input: &str) -> u64 {
 }
 
 fn read_fruits(input: &str) -> usize {
-    let error_pref = "Wrong fruit number:";
-
     match input.parse::<usize>() {
         Ok(v) => return v,
-        Err(_) => wrong_arg(format!("{} not a number, negative or too high", error_pref)),
+        Err(_) => wrong_arg("Wrong fruit number: not a number, negative or too high"),
     }
     0
 }
 
 fn read_length(input: &str) -> u32 {
-    let error_pref = "Wrong snake length:";
-
     match input.parse::<u32>() {
         Ok(v) => return v,
-        Err(_) => wrong_arg(format!("{} not a number, negative or too high", error_pref)),
+        Err(_) => wrong_arg(format!("Wrong snake length: not a number, negative or too high"),
     }
     0
 }
