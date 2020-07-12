@@ -22,7 +22,6 @@ fn main() {
         loaded_settings.snake_len,
     );
     let mut fruit_manager = mechanics::FruitManager::new();
-    new_fruit_xy(display.window.get_max_yx(), &snake, &mut fruit_manager);
 
     let mut going = true;
     let mut state = mechanics::State::MainMenu;
