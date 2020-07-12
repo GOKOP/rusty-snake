@@ -20,7 +20,7 @@ const DEF_LENGTH: &str = "3";
 pub struct Setting {
     pub name: String,
     pub help: String,
-    pub short: char, // for CLI
+    pub short: char,        // for CLI
     pub value_name: String, // displayed in CLI help
 }
 

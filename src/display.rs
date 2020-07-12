@@ -65,7 +65,7 @@ impl ColorWrap {
 pub struct Display {
     screen: Window, // the entire terminal
     colors: Vec<ColorWrap>,
-    colorful: bool, // are we using colors?
+    colorful: bool,     // are we using colors?
     pub window: Window, // the small window that the game will actually use
     pub win_size: (i32, i32),
     pub screen_max_yx: (i32, i32), // stored so changes can be traced
@@ -101,7 +101,6 @@ impl Display {
 
     // not using pancurses::Window:border() because it can't deal with unicode
     fn print_border(&self, ch: char, color_index: i16) {
-
         // print top and bottom as two long strings
         let mut horizontal = String::new();
         for _ in 0..self.window.get_max_x() {
@@ -182,7 +181,6 @@ impl Display {
 
         let mut y = menu_start_y + 2; // 2 = title + empty line
         for (index, option) in menu.options.iter().enumerate() {
-
             // if not colorful then add an indicator ">"
             // and center accordingly
 
@@ -192,7 +190,6 @@ impl Display {
                 self.window.mvaddstr(y, x, string);
 
             // otherwise color will be used for that
-
             } else {
                 let x = window_width / 2 - ((&option.text.len() / 2) as i32);
 
@@ -232,7 +229,6 @@ impl Display {
 }
 
 fn init_colors() -> Vec<ColorWrap> {
-
     // return Vec with single dummy ColorWrap if not using colors
     if !has_colors() || start_color() == ERR {
         return vec![ColorWrap::new_dummy()];
