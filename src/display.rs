@@ -185,12 +185,12 @@ impl Display {
 
     fn print_menu_title(&self, y: i32, title: &str) {
         let title_width = title.len() as i32;
-        let title_start_x = self.win_size.0 / 2 - title_width / 2; // centered
+        let x = self.win_size.0 / 2 - title_width / 2; // centered
 
         if self.colorful {
-            self.print((title_start_x, y), title, COLOR_MENU_TITLE);
+            self.print((x, y), title, COLOR_MENU_TITLE);
         } else {
-            self.print((title_start_x, y), title, 0);
+            self.print((x, y), title, 0);
         }
     }
 
