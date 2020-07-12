@@ -63,7 +63,7 @@ impl Snake {
 
         let body_len = self.body.len();
 
-        // print in reverse so that the head isn't covered by other pieces when losing
+        // move in reverse so that the entire snake isn't just copying whatever the head does
         for index in (0..body_len).rev() {
             // skipping the new piece
             if index == body_len - 1 && self.growth > 0 {
