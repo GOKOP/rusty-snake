@@ -37,7 +37,7 @@ fn main() {
             display.print_game(&snake, &fruit_manager.fruits, false);
             thread::sleep(time::Duration::from_millis(loaded_settings.snake_wait));
 
-            if mechanics::check_if_lost(display.window.get_max_yx(), &snake) {
+            if snake.check_if_lost(display.window.get_max_yx()) {
                 state = mechanics::State::Lost;
             }
 
