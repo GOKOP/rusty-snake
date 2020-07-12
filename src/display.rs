@@ -185,7 +185,7 @@ impl Display {
 
     fn print_menu_title(&self, y: i32, title: &str) {
         let title_width = title.len() as i32;
-        let title_start_x = self.win_size.0 / 2 - title_width / 2;
+        let title_start_x = self.win_size.0 / 2 - title_width / 2; // centered
 
         if self.colorful {
             self.print((title_start_x, y), title, COLOR_MENU_TITLE);
@@ -195,7 +195,7 @@ impl Display {
     }
 
     fn print_menu_option(&self, y: i32, text: &str, selected: bool) {
-        let x = self.win_size.0 / 2 - (text.len() as i32) / 2;
+        let x = self.win_size.0 / 2 - (text.len() as i32) / 2; // centered
 
         // if color can't be used to indicate the selected option, ">" will be
         if selected && !self.colorful {
@@ -209,17 +209,18 @@ impl Display {
         }
     }
 
+    // print menu's bottom text in the bottom right corner
     fn print_menu_bottom_text(&self, text: &str) {
         let x = self.win_size.0 - 1 - (text.len() as i32);
         let y = self.win_size.1 - 1;
-        self.print((x ,y), text, 0);
+        self.print((x, y), text, 0);
     }
 
     pub fn print_simple_menu(&self, menu: &interface::SimpleMenu) {
         self.window.erase();
 
         let menu_height = (menu.options.len() + 2) as i32;
-        let menu_start_y = self.win_size.1 / 2 - menu_height / 2;
+        let menu_start_y = self.win_size.1 / 2 - menu_height / 2; // menu centered
 
         self.print_menu_title(menu_start_y, &menu.title);
 
