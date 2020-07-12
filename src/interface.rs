@@ -33,7 +33,6 @@ impl SimpleMenu {
         }
     }
 
-    /// move down the options list and wrap to the top
     fn move_down(&mut self) {
         if self.selected >= self.options.len() - 1 {
             self.selected = 0;
@@ -42,7 +41,6 @@ impl SimpleMenu {
         }
     }
 
-    /// move up the options list and wrap to the bottom
     fn move_up(&mut self) {
         if self.selected <= 0 {
             self.selected = self.options.len() - 1;
@@ -51,7 +49,6 @@ impl SimpleMenu {
         }
     }
 
-    /// handle user input; return true means that target_state should be applied
     pub fn handle_input(&mut self, input: Option<Input>) -> bool {
         match input {
             Some(Input::Character(value)) => return self.handle_char_input(value),
@@ -64,7 +61,6 @@ impl SimpleMenu {
         false
     }
 
-    /// handle user input when it's a char (made for converting to lowercase)
     fn handle_char_input(&mut self, input: char) -> bool {
         let input_lower = input.to_lowercase().to_string();
 

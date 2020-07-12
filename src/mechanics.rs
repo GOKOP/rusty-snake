@@ -24,7 +24,6 @@ pub struct Snake {
 }
 
 impl Snake {
-    /// Creates new snake in the given position, pointing to the right
     pub fn new(position: (i32, i32), size: u32) -> Snake {
         Snake {
             body: vec![position],
@@ -33,7 +32,6 @@ impl Snake {
         }
     }
 
-    /// Changes direction of the snake's head to new_dir
     pub fn turn(&mut self, new_dir: Direction) {
         if (new_dir == Direction::Up && self.direction != Direction::Down)
             || (new_dir == Direction::Down && self.direction != Direction::Up)
@@ -53,7 +51,6 @@ impl Snake {
         }
     }
 
-    /// Moves all other pieces in their directions and adds a new piece if self.growth is non-zero
     pub fn advance(&mut self) {
         if self.growth > 0 {
             if let Some(tail) = self.body.last().cloned() {
@@ -79,7 +76,6 @@ impl Snake {
         }
     }
 
-    /// checks if given position is inside of the snake
     pub fn inside(&self, pos: (i32, i32)) -> bool {
         for piece in &self.body {
             if pos == *piece {
@@ -101,7 +97,6 @@ impl FruitManager {
         }
     }
 
-    /// place a new fruit in a random spot between (0,0) and max_pos-1 exclusively
     pub fn place_new(&mut self, max_pos: (i32, i32), snake: &Snake) {
         let mut rng = rand::thread_rng();
 
@@ -116,7 +111,6 @@ impl FruitManager {
         self.fruits.push((x, y));
     }
 
-    /// check if new_fruit with given position doesn't already exist
     fn fruit_unique(&self, new_fruit: (i32, i32)) -> bool {
         for fruit in &self.fruits {
             if new_fruit == *fruit {
@@ -127,7 +121,6 @@ impl FruitManager {
         true
     }
 
-    /// check if a fruit has been eaten and remove it
     pub fn fruit_eaten(&mut self, snake: &Snake) -> bool {
         let mut remove_index: i32 = -1;
 
