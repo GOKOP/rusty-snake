@@ -28,7 +28,7 @@ fn main() {
 
     while going {
         display.recenter();
-            
+
         if state == mechanics::State::MainMenu {
             simple_menu_logic(&mut main_menu, &display, &mut state);
         } else if state == mechanics::State::Game {
@@ -83,7 +83,11 @@ fn flush_input(window: &Window) {
     }
 }
 
-fn simple_menu_logic(menu: &mut interface::SimpleMenu, display: &display::Display, state: &mut mechanics::State) {
+fn simple_menu_logic(
+    menu: &mut interface::SimpleMenu,
+    display: &display::Display,
+    state: &mut mechanics::State,
+) {
     if menu.handle_input(display.window.getch()) {
         *state = menu.options[menu.selected].target_state;
     }

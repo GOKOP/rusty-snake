@@ -1,5 +1,5 @@
+use pancurses::{Input, Window};
 use rand::Rng;
-use pancurses::{Window, Input};
 
 #[derive(PartialEq, Clone, Copy)]
 pub enum State {
@@ -173,4 +173,3 @@ pub fn handle_input(window: &Window, snake: &mut Snake, state: &mut State) {
         _ => (),
     }
 }
-

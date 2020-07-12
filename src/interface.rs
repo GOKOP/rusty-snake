@@ -1,5 +1,5 @@
-use clap::crate_version;
 use crate::mechanics::State;
+use clap::crate_version;
 use pancurses::Input;
 
 pub struct MenuOption {
@@ -86,14 +86,8 @@ impl SimpleMenu {
 pub fn create_main_menu() -> SimpleMenu {
     let mut options = Vec::new();
 
-    options.push(MenuOption::new(
-        "Play".to_string(),
-        State::Game,
-    ));
-    options.push(MenuOption::new(
-        "Exit".to_string(),
-        State::Quit,
-    ));
+    options.push(MenuOption::new("Play".to_string(), State::Game));
+    options.push(MenuOption::new("Exit".to_string(), State::Quit));
 
     SimpleMenu::new(
         "Rusty Snake".to_string(),
@@ -101,4 +95,3 @@ pub fn create_main_menu() -> SimpleMenu {
         options,
     )
 }
-

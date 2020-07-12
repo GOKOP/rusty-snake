@@ -100,17 +100,21 @@ impl Display {
 
     fn print_border(&self, ch: char, color_index: i16) {
         let mut horizontal = String::new();
-    
+
         for _ in 0..self.window.get_max_x() {
             horizontal = format!("{}{}", horizontal, ch);
         }
-    
+
         self.print((0, 0), &horizontal, color_index);
         self.print((0, self.window.get_max_y() - 1), &horizontal, color_index);
-    
+
         for y in 1..self.window.get_max_y() - 1 {
             self.print((0, y), ch.to_string(), color_index);
-            self.print((self.window.get_max_x() - 1, y), ch.to_string(), color_index);
+            self.print(
+                (self.window.get_max_x() - 1, y),
+                ch.to_string(),
+                color_index,
+            );
         }
     }
 
@@ -155,21 +159,21 @@ impl Display {
 
     pub fn print_simple_menu(&self, menu: &interface::SimpleMenu) {
         self.window.erase();
-    
+
         let menu_height = (menu.options.len() + 2) as i32;
         let window_height = self.win_size.1;
         let menu_start_y = window_height / 2 - menu_height / 2;
-    
+
         let window_width = self.win_size.0;
         let title_width = menu.title.len() as i32;
         let title_start_x = window_width / 2 - title_width / 2;
-    
+
         if self.colorful {
             self.print((title_start_x, menu_start_y), &menu.title, COLOR_MENU_TITLE);
         } else {
             self.print((title_start_x, menu_start_y), &menu.title, 0);
         }
-    
+
         let mut y = menu_start_y + 2;
         for (index, option) in menu.options.iter().enumerate() {
             if index == menu.selected && !self.colorful {
@@ -178,7 +182,7 @@ impl Display {
                 self.window.mvaddstr(y, x, string);
             } else {
                 let x = window_width / 2 - ((&option.text.len() / 2) as i32);
-    
+
                 if index == menu.selected {
                     self.print((x, y), &option.text, COLOR_MENU_SELECTED);
                 } else if self.colorful {
@@ -189,10 +193,14 @@ impl Display {
             }
             y += 1
         }
-    
+
         let bottom_text_x = self.window.get_max_x() - 1 - (menu.bottom_text.len() as i32);
-        self.window.mvaddstr(self.window.get_max_y() - 1, bottom_text_x, &menu.bottom_text);
-    
+        self.window.mvaddstr(
+            self.window.get_max_y() - 1,
+            bottom_text_x,
+            &menu.bottom_text,
+        );
+
         self.window.refresh();
     }
 
@@ -200,10 +208,10 @@ impl Display {
         if self.screen.get_max_yx() == self.screen_max_yx {
             return;
         }
-    
+
         self.screen.clear();
         self.screen.refresh();
-    
+
         self.window = init_window(&self.screen, self.win_size);
         self.screen_max_yx = self.screen.get_max_yx();
     }
@@ -261,6 +269,3 @@ fn init_window(screen: &Window, size: (i32, i32)) -> Window {
 
     window
 }
-
-
-
