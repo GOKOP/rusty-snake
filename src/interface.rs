@@ -18,9 +18,9 @@ impl MenuOption {
 
 pub struct SimpleMenu {
     pub title: String,
-    pub bottom_text: String,
+    pub bottom_text: String, // text in bottom right corner
     pub options: Vec<MenuOption>,
-    pub selected: usize,
+    pub selected: usize, // which option is selected
 }
 
 impl SimpleMenu {
@@ -32,6 +32,8 @@ impl SimpleMenu {
             selected: 0,
         }
     }
+
+    // options are assumed to be printed from top to bottom
 
     fn move_down(&mut self) {
         if self.selected >= self.options.len() - 1 {
@@ -61,6 +63,7 @@ impl SimpleMenu {
         false
     }
 
+    // this exists so that the character can be converted to lowercase
     fn handle_char_input(&mut self, input: char) -> bool {
         let input_lower = input.to_lowercase().to_string();
 
@@ -69,7 +72,7 @@ impl SimpleMenu {
             "j" => self.move_down(),
             "w" => self.move_up(),
             "s" => self.move_down(),
-            "\n" => return true,
+            "\n" => return true, // Input::KeyEnter doesn't work for some reason
             "l" => return true,
             "d" => return true,
             _ => (),

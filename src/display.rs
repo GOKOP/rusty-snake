@@ -29,6 +29,7 @@ impl ColorWrap {
         }
     }
 
+    // dummy ColorWrap is used to call Display::print() when colors are disabled
     fn new_dummy() -> ColorWrap {
         ColorWrap {
             pair: 0,
@@ -62,12 +63,12 @@ impl ColorWrap {
 }
 
 pub struct Display {
-    screen: Window,
+    screen: Window, // the entire terminal
     colors: Vec<ColorWrap>,
-    colorful: bool,
-    pub window: Window,
+    colorful: bool, // are we using colors?
+    pub window: Window, // the small window that the game will actually use
     pub win_size: (i32, i32),
-    pub screen_max_yx: (i32, i32), // stored so I can check if it changed
+    pub screen_max_yx: (i32, i32), // stored so changes can be traced
 }
 
 impl Display {
@@ -88,7 +89,7 @@ impl Display {
         }
     }
 
-    // print a char or a string in given color
+    // print a char or a string in the given color
     fn print<T>(&self, pos: (i32, i32), item: T, color_index: i16)
     where
         T: ToString,
@@ -98,9 +99,11 @@ impl Display {
         self.colors[color_index as usize].disable(&self.window);
     }
 
+    // not using pancurses::Window:border() because it can't deal with unicode
     fn print_border(&self, ch: char, color_index: i16) {
-        let mut horizontal = String::new();
 
+        // print top and bottom as two long strings
+        let mut horizontal = String::new();
         for _ in 0..self.window.get_max_x() {
             horizontal = format!("{}{}", horizontal, ch);
         }
@@ -108,6 +111,7 @@ impl Display {
         self.print((0, 0), &horizontal, color_index);
         self.print((0, self.window.get_max_y() - 1), &horizontal, color_index);
 
+        // right and left as individual strings
         for y in 1..self.window.get_max_y() - 1 {
             self.print((0, y), ch.to_string(), color_index);
             self.print(
@@ -119,12 +123,14 @@ impl Display {
     }
 
     pub fn print_game(&self, snake: &mechanics::Snake, fruits: &Vec<(i32, i32)>, lost: bool) {
+        // init colors indexes (self.colors[0] will be dummy ColorWrap if not using colors)
         let mut frame_color = 0;
         let mut fruit_color = 0;
         let mut snake_color = 0;
         let mut dead_color = 0;
         let mut score_color = 0;
 
+        // set proper values if using colors
         if self.colorful {
             frame_color = COLOR_FRAME;
             fruit_color = COLOR_FRUIT;
@@ -174,12 +180,19 @@ impl Display {
             self.print((title_start_x, menu_start_y), &menu.title, 0);
         }
 
-        let mut y = menu_start_y + 2;
+        let mut y = menu_start_y + 2; // 2 = title + empty line
         for (index, option) in menu.options.iter().enumerate() {
+
+            // if not colorful then add an indicator ">"
+            // and center accordingly
+
             if index == menu.selected && !self.colorful {
                 let string = format!("> {}", &option.text);
                 let x = window_width / 2 - ((string.len() / 2) as i32);
                 self.window.mvaddstr(y, x, string);
+
+            // otherwise color will be used for that
+
             } else {
                 let x = window_width / 2 - ((&option.text.len() / 2) as i32);
 
@@ -194,6 +207,7 @@ impl Display {
             y += 1
         }
 
+        // place menu.bottom_text in the bottom right corner
         let bottom_text_x = self.window.get_max_x() - 1 - (menu.bottom_text.len() as i32);
         self.window.mvaddstr(
             self.window.get_max_y() - 1,
@@ -217,8 +231,9 @@ impl Display {
     }
 }
 
-// on failure return a vector with a dummy ColorWrap
 fn init_colors() -> Vec<ColorWrap> {
+
+    // return Vec with single dummy ColorWrap if not using colors
     if !has_colors() || start_color() == ERR {
         return vec![ColorWrap::new_dummy()];
     }

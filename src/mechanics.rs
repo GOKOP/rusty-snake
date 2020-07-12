@@ -20,6 +20,7 @@ pub enum Direction {
 pub struct Snake {
     pub body: Vec<(i32, i32)>,
     pub direction: Direction,
+    // how much is the snake supposed to grow yet
     pub growth: u32,
 }
 
@@ -52,6 +53,7 @@ impl Snake {
     }
 
     pub fn advance(&mut self) {
+        // add a piece if there's too few
         if self.growth > 0 {
             if let Some(tail) = self.body.last().cloned() {
                 self.body.push(tail);
@@ -61,6 +63,7 @@ impl Snake {
 
         let body_len = self.body.len();
 
+        // print in reverse so that the head isn't covered by other pieces when losing
         for index in (0..body_len).rev() {
             // skipping the new piece
             if index == body_len - 1 && self.growth > 0 {
@@ -124,6 +127,7 @@ impl FruitManager {
     pub fn fruit_eaten(&mut self, snake: &Snake) -> bool {
         let mut remove_index: i32 = -1;
 
+        // find if a fruit was eaten
         for (index, fruit) in self.fruits.iter().enumerate() {
             if snake.body[0] == *fruit {
                 remove_index = index as i32;
@@ -131,6 +135,7 @@ impl FruitManager {
             }
         }
 
+        // remove the fruit
         if remove_index >= 0 {
             self.fruits.remove(remove_index as usize);
             true

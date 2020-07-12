@@ -7,6 +7,7 @@ mod mechanics;
 mod settings;
 
 fn main() {
+    // init stuff
     let settings = settings::create();
     let loaded_settings = settings::read_cli_args(&settings);
 
@@ -27,7 +28,7 @@ fn main() {
     let mut state = mechanics::State::MainMenu;
 
     while going {
-        display.recenter();
+        display.recenter(); // in case the terminal was resized
 
         if state == mechanics::State::MainMenu {
             simple_menu_logic(&mut main_menu, &display, &mut state);
@@ -50,6 +51,8 @@ fn main() {
         } else if state == mechanics::State::Lost {
             display.print_game(&snake, &fruit_manager.fruits, true);
             thread::sleep(time::Duration::from_millis(1000));
+
+            // reset the game
             snake = mechanics::Snake::new(
                 (
                     loaded_settings.win_size.0 / 2,
@@ -60,6 +63,8 @@ fn main() {
             fruit_manager = mechanics::FruitManager::new();
             new_fruit_xy(display.window.get_max_yx(), &snake, &mut fruit_manager);
             flush_input(&display.window);
+
+            // and go back to the menu
             state = mechanics::State::MainMenu;
         } else if state == mechanics::State::Quit {
             going = false;
@@ -68,6 +73,7 @@ fn main() {
     endwin();
 }
 
+// ncurses and by extension pancurses operates in YX but I like XY
 fn new_fruit_xy(
     max_yx: (i32, i32),
     snake: &mechanics::Snake,

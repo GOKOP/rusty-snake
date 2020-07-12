@@ -4,6 +4,7 @@
 
 use clap::{crate_version, App, Arg};
 
+// milliseconds of delay for predefined speeds
 const SPEED1: u64 = 150;
 const SPEED2: u64 = 100;
 const SPEED3: u64 = 50;
@@ -15,16 +16,18 @@ const DEF_SPEED: &str = "2";
 const DEF_FRUITS: &str = "1";
 const DEF_LENGTH: &str = "3";
 
+// holds info about settings; made to allow reuse of the information in GUI settings (todo)
 pub struct Setting {
     pub name: String,
     pub help: String,
-    pub short: char,
+    pub short: char, // for CLI
     pub value_name: String, // displayed in CLI help
 }
 
 // types appropriate for where they're used
 pub struct LoadedSettings {
     pub win_size: (i32, i32),
+    // milliseconds of delay between game updates (aka speed but lower numbers are faster)
     pub snake_wait: u64,
     pub min_fruits: usize,
     pub snake_len: u32,
@@ -60,6 +63,7 @@ pub fn create() -> Vec<Setting> {
 }
 
 pub fn read_cli_args(settings: &Vec<Setting>) -> LoadedSettings {
+    // construct clap app with all the defined settings
     let mut app = App::new("Rusty Snake")
         .version(crate_version!())
         .author("Igor Bugajski <igorbugajski@protonmail.com>")
@@ -98,14 +102,21 @@ pub fn read_cli_args(settings: &Vec<Setting>) -> LoadedSettings {
     }
 }
 
+/*
+ all the input interpreting functions handle data validation themselves
+ this is because clap::Arg::validator() requires a function pointer
+ and it wants it with 'static lifetime
+ that doesn't play very well with my settings-data-in-struct approach
+ or maybe it does but I'm just a n00b, dunno
+ if someone who knows is reading this then please let me know
+*/
+
+// communicate error and quit; cleaner than panic!
 fn wrong_arg(error_msg: String) {
     eprintln!("{}", error_msg);
     std::process::exit(1);
 }
 
-// read *and* exit if invalid
-// not using clap::Arg::validator() because it requires a static lifetime
-// and with my Setting struct approach (to reuse stuff in settings menu) it won't work
 fn read_window_size(input: &str) -> (i32, i32) {
     let error_pref = "Wrong window size:";
 
@@ -121,6 +132,7 @@ fn read_window_size(input: &str) -> (i32, i32) {
     for (index, num) in nums.iter().enumerate() {
         let value_name: &str;
 
+        // this is for the error string
         if index == 0 {
             value_name = "x";
         } else {
@@ -146,9 +158,11 @@ fn read_window_size(input: &str) -> (i32, i32) {
 fn read_speed(input: &str) -> u64 {
     let error_pref = "Wrong snake speed:";
 
+    // remove possible trailing "ms" to see if it was there
     let num = input.trim_end_matches("ms");
+
+    // it wasn't, so the value is matched against predefined speeds
     if num == input {
-        // no "ms"
         match num {
             "1" => return SPEED1,
             "2" => return SPEED2,
@@ -159,6 +173,7 @@ fn read_speed(input: &str) -> u64 {
                 error_pref
             )),
         }
+    // it was, so the preceeding number is used directly
     } else {
         match num.parse::<u64>() {
             Ok(v) => return v,
