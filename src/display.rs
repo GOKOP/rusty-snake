@@ -99,8 +99,13 @@ impl Display {
         self.colors[color_index as usize].disable(&self.window);
     }
 
-    // not using pancurses::Window:border() because it can't deal with unicode
-    fn print_border(&self, ch: char, color_index: i16) {
+    fn print_border(&self, ch: char) {
+        let mut color_index = 0;
+
+        if self.colorful {
+            color_index = COLOR_FRAME;
+        }
+
         // print top and bottom as two long strings
         let mut horizontal = String::new();
         for _ in 0..self.window.get_max_x() {
@@ -121,30 +126,18 @@ impl Display {
         }
     }
 
-    pub fn print_game(&self, snake: &mechanics::Snake, fruits: &Vec<(i32, i32)>, lost: bool) {
-        // init colors indexes (self.colors[0] will be dummy ColorWrap if not using colors)
-        let mut frame_color = 0;
-        let mut fruit_color = 0;
+    fn print_snake(&self, snake: &mechanics::Snake, lost: bool) {
+        // init color index variables
         let mut snake_color = 0;
         let mut dead_color = 0;
-        let mut score_color = 0;
 
-        // set proper values if using colors
-        if self.colorful {
-            frame_color = COLOR_FRAME;
-            fruit_color = COLOR_FRUIT;
+        // use actual colors indexes if supposed to
+        if self.colorful { 
             snake_color = COLOR_SNAKE;
             dead_color = COLOR_DEAD;
-            score_color = COLOR_SCORE;
         }
 
-        self.window.erase();
-        self.print_border('█', frame_color);
-
-        for fruit in fruits {
-            self.print((fruit.0, fruit.1), '*', fruit_color);
-        }
-
+        // print in reverse so that the head isn't covered by other pieces when lost
         for (index, piece) in snake.body.iter().enumerate().rev() {
             if index == 0 && lost {
                 self.print((piece.0, piece.1), 'X', dead_color);
@@ -154,10 +147,38 @@ impl Display {
                 self.print((piece.0, piece.1), 'o', snake_color);
             }
         }
+    }
 
-        // displaying body length in the corner
-        let score = format!("Body: {}", snake.body.len());
+    fn print_fruits(&self, fruits: &Vec<(i32, i32)>) {
+        let mut fruit_color = 0;
+
+        if self.colorful {
+            fruit_color = COLOR_FRUIT;
+        }
+
+        for fruit in fruits {
+            self.print((fruit.0, fruit.1), '*', fruit_color);
+        }
+    }
+
+    fn print_score(&self, snake_len: usize) {
+        let mut score_color = 0;
+
+        if self.colorful {
+            score_color = COLOR_SCORE;
+        }
+
+        let score = format!("Body: {}", snake_len);
         self.print((1, self.window.get_max_y() - 1), score, score_color);
+    }
+
+    pub fn print_game(&self, snake: &mechanics::Snake, fruits: &Vec<(i32, i32)>, lost: bool) {
+        self.window.erase();
+
+        self.print_border('█');
+        self.print_fruits(fruits);
+        self.print_snake(&snake, lost);
+        self.print_score(snake.body.len());
 
         self.window.refresh();
     }
