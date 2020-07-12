@@ -183,55 +183,53 @@ impl Display {
         self.window.refresh();
     }
 
+    fn print_menu_title(&self, y: i32, title: &str) {
+        let title_width = title.len() as i32;
+        let title_start_x = self.win_size.0 / 2 - title_width / 2;
+
+        if self.colorful {
+            self.print((title_start_x, y), title, COLOR_MENU_TITLE);
+        } else {
+            self.print((title_start_x, y), title, 0);
+        }
+    }
+
+    fn print_menu_option(&self, y: i32, text: &str, selected: bool) {
+        let x = self.win_size.0 / 2 - (text.len() as i32) / 2;
+
+        // if color can't be used to indicate the selected option, ">" will be
+        if selected && !self.colorful {
+            let string = format!(">{}", text);
+            let x = self.win_size.0 / 2 - (string.len() as i32) / 2;
+            self.print((x, y), &string, 0);
+        } else if selected {
+            self.print((x, y), text, COLOR_MENU_SELECTED);
+        } else {
+            self.print((x, y), text, COLOR_MENU_OPTION);
+        }
+    }
+
+    fn print_menu_bottom_text(&self, text: &str) {
+        let x = self.win_size.0 - 1 - (text.len() as i32);
+        let y = self.win_size.1 - 1;
+        self.print((x ,y), text, 0);
+    }
+
     pub fn print_simple_menu(&self, menu: &interface::SimpleMenu) {
         self.window.erase();
 
         let menu_height = (menu.options.len() + 2) as i32;
-        let window_height = self.win_size.1;
-        let menu_start_y = window_height / 2 - menu_height / 2;
+        let menu_start_y = self.win_size.1 / 2 - menu_height / 2;
 
-        let window_width = self.win_size.0;
-        let title_width = menu.title.len() as i32;
-        let title_start_x = window_width / 2 - title_width / 2;
-
-        if self.colorful {
-            self.print((title_start_x, menu_start_y), &menu.title, COLOR_MENU_TITLE);
-        } else {
-            self.print((title_start_x, menu_start_y), &menu.title, 0);
-        }
+        self.print_menu_title(menu_start_y, &menu.title);
 
         let mut y = menu_start_y + 2; // 2 = title + empty line
         for (index, option) in menu.options.iter().enumerate() {
-            // if not colorful then add an indicator ">"
-            // and center accordingly
-
-            if index == menu.selected && !self.colorful {
-                let string = format!("> {}", &option.text);
-                let x = window_width / 2 - ((string.len() / 2) as i32);
-                self.window.mvaddstr(y, x, string);
-
-            // otherwise color will be used for that
-            } else {
-                let x = window_width / 2 - ((&option.text.len() / 2) as i32);
-
-                if index == menu.selected {
-                    self.print((x, y), &option.text, COLOR_MENU_SELECTED);
-                } else if self.colorful {
-                    self.print((x, y), &option.text, COLOR_MENU_OPTION);
-                } else {
-                    self.window.mvaddstr(y, x, &option.text);
-                }
-            }
-            y += 1
+            self.print_menu_option(y, &option.text, index == menu.selected);
+            y += 1;
         }
 
-        // place menu.bottom_text in the bottom right corner
-        let bottom_text_x = self.window.get_max_x() - 1 - (menu.bottom_text.len() as i32);
-        self.window.mvaddstr(
-            self.window.get_max_y() - 1,
-            bottom_text_x,
-            &menu.bottom_text,
-        );
+        self.print_menu_bottom_text(&menu.bottom_text);
 
         self.window.refresh();
     }
