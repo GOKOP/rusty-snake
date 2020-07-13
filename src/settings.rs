@@ -21,7 +21,7 @@ pub struct Setting {
     pub name: String,
     pub help: String,
     pub short: char,        // for CLI
-    pub value_name: String, // displayed in CLI help
+    pub value_name: String, // displayed in CLI help; set to "" if not supposed to take value
 }
 
 // types appropriate for where they're used
@@ -31,6 +31,7 @@ pub struct LoadedSettings {
     pub snake_wait: u64,
     pub min_fruits: usize,
     pub snake_len: u32,
+    pub use_color: bool,
 }
 
 pub fn create() -> Vec<Setting> {
@@ -58,6 +59,12 @@ pub fn create() -> Vec<Setting> {
             help: "Initial length of the snake. Must be a positive integer.".to_string(),
             short: 'l',
             value_name: "length".to_string(),
+        },
+        Setting {
+            name: "no-color".to_string(),
+            help: "Don't use colors.".to_string(),
+            short: 'c',
+            value_name: "".to_string(),
         }
     ]
 }
@@ -70,13 +77,19 @@ pub fn read_cli_args(settings: &Vec<Setting>) -> LoadedSettings {
         .about("A snake game. It can be configured through CLI.");
 
     for setting in settings.iter() {
+        let mut takes_value = true;
+
+        if setting.value_name == "" {
+            takes_value = false;
+        }
+
         app = app.arg(
             Arg::with_name(&setting.name)
                 .help(&setting.help)
                 .long(&setting.name)
                 .short(&setting.short.to_string())
-                .takes_value(true)
-                .value_name(&setting.value_name),
+                .value_name(&setting.value_name)
+                .takes_value(takes_value)
         );
     }
 
@@ -99,6 +112,7 @@ pub fn read_cli_args(settings: &Vec<Setting>) -> LoadedSettings {
         snake_wait: speed,
         min_fruits: fruits,
         snake_len: length,
+        use_color: !matches.is_present("no-color"),
     }
 }
 

@@ -72,9 +72,9 @@ pub struct Display {
 }
 
 impl Display {
-    pub fn new(win_size: (i32, i32)) -> Display {
+    pub fn new(win_size: (i32, i32), use_color: bool) -> Display {
         let screen = init_curses();
-        let colors = init_colors();
+        let colors = init_colors(use_color);
         let window = init_window(&screen, win_size);
         let max_yx = screen.get_max_yx();
         let colorful = colors.len() > 1;
@@ -204,8 +204,10 @@ impl Display {
             self.print((x, y), &string, 0);
         } else if selected {
             self.print((x, y), text, COLOR_MENU_SELECTED);
-        } else {
+        } else if self.colorful {
             self.print((x, y), text, COLOR_MENU_OPTION);
+        } else {
+            self.print((x, y), text, 0);
         }
     }
 
@@ -248,8 +250,14 @@ impl Display {
     }
 }
 
-fn init_colors() -> Vec<ColorWrap> {
+fn init_colors(use_color: bool) -> Vec<ColorWrap> {
     // return Vec with single dummy ColorWrap if not using colors
+
+    // this is a seperate if to avoid calling start_color() which by itself alters display
+    if !use_color {
+        return vec![ColorWrap::new_dummy()];
+    }
+
     if !has_colors() || start_color() == ERR {
         return vec![ColorWrap::new_dummy()];
     }

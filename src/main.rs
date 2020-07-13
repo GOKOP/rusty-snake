@@ -11,7 +11,7 @@ fn main() {
     let settings = settings::create();
     let loaded_settings = settings::read_cli_args(&settings);
 
-    let mut display = display::Display::new(loaded_settings.win_size);
+    let mut display = display::Display::new(loaded_settings.win_size, loaded_settings.use_color);
 
     let mut main_menu = interface::create_main_menu();
     let mut snake = mechanics::Snake::new(
