@@ -289,6 +289,7 @@ fn init_curses() -> Window {
     screen.nodelay(true);
     curs_set(0);
     cbreak();
+	set_title("Rusty Snake");
     screen
 }
 
