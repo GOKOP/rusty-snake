@@ -96,22 +96,15 @@ pub fn read_cli_args(settings: &Vec<Setting>) -> LoadedSettings {
     let matches = app.get_matches();
 
     let win_size_string = matches.value_of("window-size").unwrap_or(DEF_WINDOW);
-    let win_size = read_window_size(win_size_string);
-
     let speed_string = matches.value_of("speed").unwrap_or(DEF_SPEED);
-    let speed = read_speed(speed_string);
-
     let fruits_string = matches.value_of("fruits").unwrap_or(DEF_FRUITS);
-    let fruits = read_fruits(fruits_string);
-
     let length_string = matches.value_of("length").unwrap_or(DEF_LENGTH);
-    let length = read_length(length_string);
 
     LoadedSettings {
-        win_size: win_size,
-        snake_wait: speed,
-        min_fruits: fruits,
-        snake_len: length,
+        win_size: read_window_size(win_size_string),
+        snake_wait: read_speed(speed_string),
+        min_fruits: read_fruits(fruits_string),
+        snake_len: read_length(length_string),
         use_color: !matches.is_present("no-color"),
     }
 }
