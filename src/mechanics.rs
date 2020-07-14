@@ -161,13 +161,31 @@ impl FruitManager {
     }
 }
 
-pub fn handle_input(window: &Window, snake: &mut Snake, state: &mut State) {
+pub fn handle_input(window: &Window, mut snake: &mut Snake, mut state: &mut State) {
     match window.getch() {
-        Some(Input::Character('q')) => *state = State::Reset,
+        Some(Input::Character(c)) => handle_char_input(c, &mut snake, &mut state),
         Some(Input::KeyUp) => snake.turn(Direction::Up),
         Some(Input::KeyDown) => snake.turn(Direction::Down),
         Some(Input::KeyRight) => snake.turn(Direction::Right),
         Some(Input::KeyLeft) => snake.turn(Direction::Left),
+        _ => (),
+    }
+}
+
+// exists to lowercase input properly
+fn handle_char_input(input: char, snake: &mut Snake, state: &mut State) {
+    let input_lower = input.to_lowercase().to_string();
+
+    match input_lower.as_str() {
+        "q" => *state = State::Reset,
+        "w" => snake.turn(Direction::Up),
+        "k" => snake.turn(Direction::Up),
+        "s" => snake.turn(Direction::Down),
+        "j" => snake.turn(Direction::Down),
+        "d" => snake.turn(Direction::Right),
+        "l" => snake.turn(Direction::Right),
+        "a" => snake.turn(Direction::Left),
+        "h" => snake.turn(Direction::Left),
         _ => (),
     }
 }
