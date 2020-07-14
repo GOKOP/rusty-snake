@@ -6,6 +6,7 @@ pub enum State {
     MainMenu,
     Game,
     Lost,
+    Reset,
     Quit,
 }
 
@@ -162,22 +163,11 @@ impl FruitManager {
 
 pub fn handle_input(window: &Window, snake: &mut Snake, state: &mut State) {
     match window.getch() {
-        Some(Input::Character('q')) => *state = State::MainMenu,
+        Some(Input::Character('q')) => *state = State::Reset,
         Some(Input::KeyUp) => snake.turn(Direction::Up),
         Some(Input::KeyDown) => snake.turn(Direction::Down),
         Some(Input::KeyRight) => snake.turn(Direction::Right),
         Some(Input::KeyLeft) => snake.turn(Direction::Left),
         _ => (),
     }
-}
-
-pub fn reset(
-    snake: &mut Snake,
-    fruit_manager: &mut FruitManager,
-    win_size: (i32, i32),
-    snake_len: u32,
-) {
-    *snake = Snake::new((win_size.0 / 2, win_size.1 / 2), snake_len);
-    *fruit_manager = FruitManager::new();
-    fruit_manager.place_new(win_size, &snake);
 }

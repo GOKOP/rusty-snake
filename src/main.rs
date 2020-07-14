@@ -50,17 +50,15 @@ fn main() {
         } else if state == mechanics::State::Lost {
             display.print_game(&snake, &fruit_manager.fruits, true);
             thread::sleep(time::Duration::from_millis(1000));
-
-            // reset the game
-            mechanics::reset(
-                &mut snake,
-                &mut fruit_manager,
-                loaded_settings.win_size,
+            state = mechanics::State::Reset;
+        } else if state == mechanics::State::Reset {
+            snake = mechanics::Snake::new(
+                (display.win_size.0 / 2, display.win_size.1 / 2),
                 loaded_settings.snake_len,
             );
+            fruit_manager = mechanics::FruitManager::new();
+            fruit_manager.place_new(display.win_size, &snake);
             flush_input(&display.window);
-
-            // and go back to the menu
             state = mechanics::State::MainMenu;
         } else if state == mechanics::State::Quit {
             going = false;
