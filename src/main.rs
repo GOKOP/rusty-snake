@@ -1,3 +1,4 @@
+use devtimer::DevTime;
 use pancurses::{endwin, Window};
 use std::{thread, time};
 
@@ -23,6 +24,8 @@ fn main() {
     );
     let mut fruit_manager = mechanics::FruitManager::new();
 
+    let mut timer = DevTime::new_simple();
+
     let mut going = true;
     let mut state = mechanics::State::MainMenu;
 
@@ -35,7 +38,17 @@ fn main() {
         } else if state == mechanics::State::Game {
             mechanics::handle_input(&display.window, &mut snake, &mut state);
             snake.advance();
-            display.print_game(&snake, &fruit_manager.fruits, false);
+
+            timer.stop();
+            display.print_game(
+                &snake,
+                &fruit_manager.fruits,
+                false,
+                loaded_settings.snake_wait,
+                timer.time_in_millis().unwrap_or(0),
+            );
+            timer.start();
+
             thread::sleep(time::Duration::from_millis(loaded_settings.snake_wait));
 
             if snake.check_if_lost(display.window.get_max_yx()) {
@@ -50,7 +63,14 @@ fn main() {
             }
         //
         } else if state == mechanics::State::Lost {
-            display.print_game(&snake, &fruit_manager.fruits, true);
+            timer.stop();
+            display.print_game(
+                &snake,
+                &fruit_manager.fruits,
+                true,
+                loaded_settings.snake_wait,
+                timer.time_in_millis().unwrap_or(0),
+            );
             thread::sleep(time::Duration::from_millis(1000));
             state = mechanics::State::Reset;
         //

@@ -174,7 +174,34 @@ impl Display {
         self.print((1, self.window.get_max_y() - 1), score, score_color);
     }
 
-    pub fn print_game(&self, snake: &mechanics::Snake, fruits: &Vec<(i32, i32)>, lost: bool) {
+    // `expected` is taken from settings where it's u64,
+    // but `actual` is taken from devtimer functions which return u128
+    fn print_benchmark(&self, expected: u64, actual: u128) {
+        let mut color = 0;
+        if self.colorful {
+            color = COLOR_SCORE;
+        }
+
+        // actual value in the top left corner
+        self.print((1, 0), &format!("{}ms", actual), color);
+
+        // expected value in the top right corner
+        let string = format!("exp.: {}ms", expected);
+        self.print(
+            (self.win_size.0 - 1 - string.len() as i32, 0),
+            string,
+            color,
+        );
+    }
+
+    pub fn print_game(
+        &self,
+        snake: &mechanics::Snake,
+        fruits: &Vec<(i32, i32)>,
+        lost: bool,
+        time_expected: u64,
+        time_actual: u128,
+    ) {
         if !self.win_good {
             return;
         }
@@ -182,6 +209,7 @@ impl Display {
         self.window.erase();
 
         self.print_border('█');
+        self.print_benchmark(time_expected, time_actual);
         self.print_fruits(fruits);
         self.print_snake(&snake, lost);
         self.print_score(snake.body.len());
