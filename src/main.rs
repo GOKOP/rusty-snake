@@ -27,10 +27,9 @@ fn main() {
     let mut benchmark_timer = DevTime::new_simple();
     let mut sleep_tune_timer = DevTime::new_simple();
 
-    let mut going = true;
     let mut state = mechanics::State::MainMenu;
 
-    while going {
+    loop {
         display.recenter(); // in case the terminal was resized
 
         if state == mechanics::State::MainMenu {
@@ -98,7 +97,7 @@ fn main() {
             state = mechanics::State::MainMenu;
         //
         } else if state == mechanics::State::Quit {
-            going = false;
+            break;
         }
     }
     endwin();
