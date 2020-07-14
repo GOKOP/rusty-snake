@@ -45,7 +45,7 @@ fn main() {
                 || fruit_manager.fruits.len() < loaded_settings.min_fruits
             {
                 snake.growth += 1;
-                new_fruit_xy(display.window.get_max_yx(), &snake, &mut fruit_manager);
+                fruit_manager.place_new(display.window.get_max_yx(), &snake);
             }
         } else if state == mechanics::State::Lost {
             display.print_game(&snake, &fruit_manager.fruits, true);
@@ -60,7 +60,7 @@ fn main() {
                 loaded_settings.snake_len,
             );
             fruit_manager = mechanics::FruitManager::new();
-            mechanics::new_fruit_xy(display.window.get_max_yx(), &snake, &mut fruit_manager);
+            fruit_manager.place_new(display.window.get_max_yx(), &snake);
             flush_input(&display.window);
 
             // and go back to the menu

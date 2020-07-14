@@ -115,15 +115,15 @@ impl FruitManager {
         }
     }
 
-    pub fn place_new(&mut self, max_pos: (i32, i32), snake: &Snake) {
+    pub fn place_new(&mut self, max_yx: (i32, i32), snake: &Snake) {
         let mut rng = rand::thread_rng();
 
         let mut x = 0;
         let mut y = 0;
 
         while x == 0 || y == 0 || !self.fruit_unique((x, y)) || snake.inside((x, y)) {
-            x = rng.gen_range(1, max_pos.0 - 1);
-            y = rng.gen_range(1, max_pos.1 - 1);
+            x = rng.gen_range(1, max_yx.1 - 1);
+            y = rng.gen_range(1, max_yx.0 - 1);
         }
 
         self.fruits.push((x, y));
@@ -169,14 +169,4 @@ pub fn handle_input(window: &Window, snake: &mut Snake, state: &mut State) {
         Some(Input::KeyLeft) => snake.turn(Direction::Left),
         _ => (),
     }
-}
-
-// ncurses and by extension pancurses operates in YX but I like XY
-fn new_fruit_xy(
-    max_yx: (i32, i32),
-    snake: &mechanics::Snake,
-    fruit_manager: &mut mechanics::FruitManager,
-) {
-    let max_xy = (max_yx.1, max_yx.0);
-    fruit_manager.place_new(max_xy, &snake);
 }
