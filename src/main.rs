@@ -52,12 +52,13 @@ fn main() {
                 state = mechanics::State::Lost;
             }
 
-            if fruit_manager.fruit_eaten(&snake)
-                || fruit_manager.fruits.len() < loaded_settings.min_fruits
-            {
+            if fruit_manager.fruit_eaten(&snake) {
                 snake.growth += 1;
-                fruit_manager.place_new(display.window.get_max_yx(), &snake);
+                fruit_manager.place_new(display.win_size, &snake);
+            } else if fruit_manager.fruits.len() < loaded_settings.min_fruits {
+                fruit_manager.place_new(display.win_size, &snake);
             }
+
 
             if loaded_settings.benchmark {
                 display.print_game(
