@@ -116,15 +116,15 @@ impl FruitManager {
         }
     }
 
-    pub fn place_new(&mut self, max_yx: (i32, i32), snake: &Snake) {
+    pub fn place_new(&mut self, max_xy: (i32, i32), snake: &Snake) {
         let mut rng = rand::thread_rng();
 
         let mut x = 0;
         let mut y = 0;
 
         while x == 0 || y == 0 || !self.fruit_unique((x, y)) || snake.inside((x, y)) {
-            x = rng.gen_range(1, max_yx.1 - 1);
-            y = rng.gen_range(1, max_yx.0 - 1);
+            x = rng.gen_range(1, max_xy.0 - 2);
+            y = rng.gen_range(1, max_xy.1 - 2);
         }
 
         self.fruits.push((x, y));
