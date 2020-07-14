@@ -31,6 +31,7 @@ fn main() {
 
         if state == mechanics::State::MainMenu {
             simple_menu_logic(&mut main_menu, &display, &mut state);
+        //
         } else if state == mechanics::State::Game {
             mechanics::handle_input(&display.window, &mut snake, &mut state);
             snake.advance();
@@ -47,10 +48,12 @@ fn main() {
                 snake.growth += 1;
                 fruit_manager.place_new(display.window.get_max_yx(), &snake);
             }
+        //
         } else if state == mechanics::State::Lost {
             display.print_game(&snake, &fruit_manager.fruits, true);
             thread::sleep(time::Duration::from_millis(1000));
             state = mechanics::State::Reset;
+        //
         } else if state == mechanics::State::Reset {
             snake = mechanics::Snake::new(
                 (display.win_size.0 / 2, display.win_size.1 / 2),
@@ -60,6 +63,7 @@ fn main() {
             fruit_manager.place_new(display.win_size, &snake);
             flush_input(&display.window);
             state = mechanics::State::MainMenu;
+        //
         } else if state == mechanics::State::Quit {
             going = false;
         }
