@@ -24,7 +24,8 @@ fn main() {
     );
     let mut fruit_manager = mechanics::FruitManager::new();
 
-    let mut timer = DevTime::new_simple();
+    let mut benchmark_timer = DevTime::new_simple();
+    let mut sleep_tune_timer = DevTime::new_simple();
 
     let mut going = true;
     let mut state = mechanics::State::MainMenu;
@@ -51,31 +52,42 @@ fn main() {
             }
 
             if loaded_settings.benchmark {
-                timer.stop();
-                let time = timer.time_in_millis().unwrap_or(0);
-                timer.start();
-
+                benchmark_timer.stop();
                 display.print_game(
                     &snake,
                     &fruit_manager.fruits,
                     false,
                     loaded_settings.snake_wait,
-                    time,
+                    benchmark_timer.time_in_millis().unwrap_or(0),
                 );
+                benchmark_timer.start();
             } else {
                 display.print_game(&snake, &fruit_manager.fruits, false, 0, 0);
             }
 
-            thread::sleep(time::Duration::from_millis(loaded_settings.snake_wait));
+            sleep_tune_timer.stop();
 
+            let wait_nanos = loaded_settings.snake_wait * 1000000;
+            let elapsed_nanos: u64 = sleep_tune_timer.time_in_nanos().unwrap_or(0) as u64;
+            let sleep_nanos: u64;
+
+            if elapsed_nanos < wait_nanos {
+                sleep_nanos = wait_nanos - elapsed_nanos;
+            } else {
+                sleep_nanos = 0;
+            }
+
+            thread::sleep(time::Duration::from_nanos(sleep_nanos));
+            sleep_tune_timer.start();
         //
         } else if state == mechanics::State::Lost {
-            timer.stop();
             display.print_game(&snake, &fruit_manager.fruits, true, 0, 0);
             thread::sleep(time::Duration::from_millis(1000));
             state = mechanics::State::Reset;
         //
         } else if state == mechanics::State::Reset {
+            benchmark_timer.stop();
+            sleep_tune_timer.stop();
             snake = mechanics::Snake::new(
                 (display.win_size.0 / 2, display.win_size.1 / 2),
                 loaded_settings.snake_len,
