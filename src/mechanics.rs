@@ -123,8 +123,8 @@ impl FruitManager {
         let mut y = 0;
 
         while x == 0 || y == 0 || !self.fruit_unique((x, y)) || snake.inside((x, y)) {
-            x = rng.gen_range(1, max_xy.0 - 2);
-            y = rng.gen_range(1, max_xy.1 - 2);
+            x = rng.gen_range(1, max_xy.0 - 1);
+            y = rng.gen_range(1, max_xy.1 - 1);
         }
 
         self.fruits.push((x, y));
