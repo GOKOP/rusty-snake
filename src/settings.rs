@@ -32,6 +32,7 @@ pub struct LoadedSettings {
     pub min_fruits: usize,
     pub snake_len: u32,
     pub use_color: bool,
+    pub benchmark: bool,
 }
 
 pub fn create() -> Vec<Setting> {
@@ -64,6 +65,12 @@ pub fn create() -> Vec<Setting> {
             name: "no-color".to_string(),
             help: "Don't use colors.".to_string(),
             short: 'c',
+            value_name: "".to_string(),
+        },
+        Setting {
+            name: "benchmark".to_string(),
+            help: "Display measured vs expected update time while playing".to_string(),
+            short: 'b',
             value_name: "".to_string(),
         }
     ]
@@ -106,6 +113,7 @@ pub fn read_cli_args(settings: &Vec<Setting>) -> LoadedSettings {
         min_fruits: read_fruits(fruits_string),
         snake_len: read_length(length_string),
         use_color: !matches.is_present("no-color"),
+        benchmark: matches.is_present("benchmark"),
     }
 }
 

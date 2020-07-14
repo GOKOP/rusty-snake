@@ -209,10 +209,13 @@ impl Display {
         self.window.erase();
 
         self.print_border('█');
-        self.print_benchmark(time_expected, time_actual);
         self.print_fruits(fruits);
         self.print_snake(&snake, lost);
         self.print_score(snake.body.len());
+
+        if time_expected > 0 {
+            self.print_benchmark(time_expected, time_actual);
+        }
 
         self.window.refresh();
     }
