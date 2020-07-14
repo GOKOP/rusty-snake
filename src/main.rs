@@ -30,6 +30,15 @@ fn main() {
     let mut state = mechanics::State::MainMenu;
 
     loop {
+        let mut benchmark_time = 0;
+
+        // total time of executing the previous loop iteration, including sleep time
+        if loaded_settings.benchmark {
+            benchmark_timer.stop();
+            benchmark_time = benchmark_timer.time_in_millis().unwrap_or(0);
+            benchmark_timer.start();
+        }
+
         display.recenter(); // in case the terminal was resized
 
         if state == mechanics::State::MainMenu {
@@ -51,15 +60,13 @@ fn main() {
             }
 
             if loaded_settings.benchmark {
-                benchmark_timer.stop();
                 display.print_game(
                     &snake,
                     &fruit_manager.fruits,
                     false,
                     loaded_settings.snake_wait,
-                    benchmark_timer.time_in_millis().unwrap_or(0),
+                    benchmark_time,
                 );
-                benchmark_timer.start();
             } else {
                 display.print_game(&snake, &fruit_manager.fruits, false, 0, 0);
             }
