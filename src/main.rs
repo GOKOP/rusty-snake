@@ -60,7 +60,7 @@ fn main() {
                 loaded_settings.snake_len,
             );
             fruit_manager = mechanics::FruitManager::new();
-            new_fruit_xy(display.window.get_max_yx(), &snake, &mut fruit_manager);
+            mechanics::new_fruit_xy(display.window.get_max_yx(), &snake, &mut fruit_manager);
             flush_input(&display.window);
 
             // and go back to the menu
@@ -70,16 +70,6 @@ fn main() {
         }
     }
     endwin();
-}
-
-// ncurses and by extension pancurses operates in YX but I like XY
-fn new_fruit_xy(
-    max_yx: (i32, i32),
-    snake: &mechanics::Snake,
-    fruit_manager: &mut mechanics::FruitManager,
-) {
-    let max_xy = (max_yx.1, max_yx.0);
-    fruit_manager.place_new(max_xy, &snake);
 }
 
 fn flush_input(window: &Window) {

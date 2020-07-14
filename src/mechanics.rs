@@ -170,3 +170,13 @@ pub fn handle_input(window: &Window, snake: &mut Snake, state: &mut State) {
         _ => (),
     }
 }
+
+// ncurses and by extension pancurses operates in YX but I like XY
+fn new_fruit_xy(
+    max_yx: (i32, i32),
+    snake: &mechanics::Snake,
+    fruit_manager: &mut mechanics::FruitManager,
+) {
+    let max_xy = (max_yx.1, max_yx.0);
+    fruit_manager.place_new(max_xy, &snake);
+}
