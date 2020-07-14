@@ -66,6 +66,7 @@ pub struct Display {
     screen: Window, // the entire terminal
     colors: Vec<ColorWrap>,
     colorful: bool,     // are we using colors?
+    win_good: bool, // is window the right size or is it for a "TERM TOO SMALL" message?
     pub window: Window, // the small window that the game will actually use
     pub win_size: (i32, i32),
     pub screen_max_yx: (i32, i32), // stored so changes can be traced
@@ -75,15 +76,16 @@ impl Display {
     pub fn new(win_size: (i32, i32), use_color: bool) -> Display {
         let screen = init_curses();
         let colors = init_colors(use_color);
-        let window = init_window(&screen, win_size);
+        let window_wrap = init_window(&screen, win_size);
         let max_yx = screen.get_max_yx();
         let colorful = colors.len() > 1;
 
         Display {
             screen: screen,
             colors: colors,
-            window: window,
+            window: window_wrap.0,
             win_size: win_size,
+            win_good: window_wrap.1,
             screen_max_yx: max_yx,
             colorful: colorful,
         }
@@ -173,6 +175,10 @@ impl Display {
     }
 
     pub fn print_game(&self, snake: &mechanics::Snake, fruits: &Vec<(i32, i32)>, lost: bool) {
+        if !self.win_good {
+            return;
+        }
+
         self.window.erase();
 
         self.print_border('█');
@@ -219,6 +225,10 @@ impl Display {
     }
 
     pub fn print_simple_menu(&self, menu: &interface::SimpleMenu) {
+        if !self.win_good {
+            return;
+        }
+
         self.window.erase();
 
         let menu_height = (menu.options.len() + 2) as i32;
@@ -245,7 +255,9 @@ impl Display {
         self.screen.clear();
         self.screen.refresh();
 
-        self.window = init_window(&self.screen, self.win_size);
+        let window_wrap = init_window(&self.screen, self.win_size);
+        self.window = window_wrap.0;
+        self.win_good = window_wrap.1;
         self.screen_max_yx = self.screen.get_max_yx();
     }
 }
@@ -293,19 +305,46 @@ fn init_curses() -> Window {
     screen
 }
 
-fn init_window(screen: &Window, size: (i32, i32)) -> Window {
+// bool value indicates whether the window is fine
+// or it's just for displaying error "win too small"
+// in which case it shouldn't be altered
+fn init_window(screen: &Window, size: (i32, i32)) -> (Window, bool) {
     let screen_size = screen.get_max_yx();
-    let window = screen
+    let maybe_window = screen
         .subwin(
             size.1,
             size.0,
             (screen_size.0 / 2) - (size.1 / 2),
             (screen_size.1 / 2) - (size.0 / 2),
-        )
-        .expect("Can't create subwindow");
+        );
+
+    let window: Window;
+    let ok: bool;
+
+    match maybe_window {
+        Ok(win) => {
+            window = win;
+            ok = true;
+        },
+        Err(_) => {
+            window = error_window(&screen);
+            ok = false;
+        },
+    }
 
     window.nodelay(true);
     window.keypad(true);
 
+    (window, ok)
+}
+
+fn error_window(screen: &Window) -> Window {
+    let window = screen.subwin(
+        screen.get_max_y(), 
+        screen.get_max_x(), 
+        0, 
+        0,
+    ).expect("Can't create subwindow");
+    window.addstr("TERM TOO SMALL");
     window
 }
