@@ -172,19 +172,12 @@ pub fn handle_input(window: &Window, snake: &mut Snake, state: &mut State) {
 }
 
 pub fn reset(
-    snake: &mut Snake, 
-    fruit_manager: &mut FruitManager, 
-    win_size: (i32, i32), 
+    snake: &mut Snake,
+    fruit_manager: &mut FruitManager,
+    win_size: (i32, i32),
     snake_len: u32,
-    )
-{
-    *snake = Snake::new(
-        (
-            win_size.0 / 2,
-            win_size.1 / 2,
-        ),
-        snake_len,
-    );
+) {
+    *snake = Snake::new((win_size.0 / 2, win_size.1 / 2), snake_len);
     *fruit_manager = FruitManager::new();
     fruit_manager.place_new(win_size, &snake);
 }

@@ -66,7 +66,7 @@ pub struct Display {
     screen: Window, // the entire terminal
     colors: Vec<ColorWrap>,
     colorful: bool,     // are we using colors?
-    win_good: bool, // is window the right size or is it for a "TERM TOO SMALL" message?
+    win_good: bool,     // is window the right size or is it for a "TERM TOO SMALL" message?
     pub window: Window, // the small window that the game will actually use
     pub win_size: (i32, i32),
     pub screen_max_yx: (i32, i32), // stored so changes can be traced
@@ -134,7 +134,7 @@ impl Display {
         let mut dead_color = 0;
 
         // use actual colors indexes if supposed to
-        if self.colorful { 
+        if self.colorful {
             snake_color = COLOR_SNAKE;
             dead_color = COLOR_DEAD;
         }
@@ -301,7 +301,7 @@ fn init_curses() -> Window {
     screen.nodelay(true);
     curs_set(0);
     cbreak();
-	set_title("Rusty Snake");
+    set_title("Rusty Snake");
     screen
 }
 
@@ -310,13 +310,12 @@ fn init_curses() -> Window {
 // in which case it shouldn't be altered
 fn init_window(screen: &Window, size: (i32, i32)) -> (Window, bool) {
     let screen_size = screen.get_max_yx();
-    let maybe_window = screen
-        .subwin(
-            size.1,
-            size.0,
-            (screen_size.0 / 2) - (size.1 / 2),
-            (screen_size.1 / 2) - (size.0 / 2),
-        );
+    let maybe_window = screen.subwin(
+        size.1,
+        size.0,
+        (screen_size.0 / 2) - (size.1 / 2),
+        (screen_size.1 / 2) - (size.0 / 2),
+    );
 
     let window: Window;
     let ok: bool;
@@ -325,11 +324,11 @@ fn init_window(screen: &Window, size: (i32, i32)) -> (Window, bool) {
         Ok(win) => {
             window = win;
             ok = true;
-        },
+        }
         Err(_) => {
             window = error_window(&screen);
             ok = false;
-        },
+        }
     }
 
     window.nodelay(true);
@@ -339,12 +338,9 @@ fn init_window(screen: &Window, size: (i32, i32)) -> (Window, bool) {
 }
 
 fn error_window(screen: &Window) -> Window {
-    let window = screen.subwin(
-        screen.get_max_y(), 
-        screen.get_max_x(), 
-        0, 
-        0,
-    ).expect("Can't create subwindow");
+    let window = screen
+        .subwin(screen.get_max_y(), screen.get_max_x(), 0, 0)
+        .expect("Can't create subwindow");
     window.addstr("TERM TOO SMALL");
     window
 }

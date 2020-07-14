@@ -89,7 +89,7 @@ pub fn read_cli_args(settings: &Vec<Setting>) -> LoadedSettings {
                 .long(&setting.name)
                 .short(&setting.short.to_string())
                 .value_name(&setting.value_name)
-                .takes_value(takes_value)
+                .takes_value(takes_value),
         );
     }
 
