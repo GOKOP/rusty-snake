@@ -52,15 +52,7 @@ fn main() {
             thread::sleep(time::Duration::from_millis(1000));
 
             // reset the game
-            snake = mechanics::Snake::new(
-                (
-                    loaded_settings.win_size.0 / 2,
-                    loaded_settings.win_size.1 / 2,
-                ),
-                loaded_settings.snake_len,
-            );
-            fruit_manager = mechanics::FruitManager::new();
-            fruit_manager.place_new(display.window.get_max_yx(), &snake);
+            mechanics::reset(&mut snake, &mut fruit_manager, loaded_settings.win_size, loaded_settings.snake_len);
             flush_input(&display.window);
 
             // and go back to the menu
