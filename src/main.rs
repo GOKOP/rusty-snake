@@ -39,22 +39,6 @@ fn main() {
             mechanics::handle_input(&display.window, &mut snake, &mut state);
             snake.advance();
 
-            if loaded_settings.benchmark {
-                timer.stop();
-                display.print_game(
-                    &snake,
-                    &fruit_manager.fruits,
-                    false,
-                    loaded_settings.snake_wait,
-                    timer.time_in_millis().unwrap_or(0),
-                );
-                timer.start();
-            } else {
-                display.print_game(&snake, &fruit_manager.fruits, false, 0, 0);
-            }
-
-            thread::sleep(time::Duration::from_millis(loaded_settings.snake_wait));
-
             if snake.check_if_lost(display.window.get_max_yx()) {
                 state = mechanics::State::Lost;
             }
@@ -65,6 +49,25 @@ fn main() {
                 snake.growth += 1;
                 fruit_manager.place_new(display.window.get_max_yx(), &snake);
             }
+
+            if loaded_settings.benchmark {
+                timer.stop();
+                let time = timer.time_in_millis().unwrap_or(0);
+                timer.start();
+
+                display.print_game(
+                    &snake,
+                    &fruit_manager.fruits,
+                    false,
+                    loaded_settings.snake_wait,
+                    time,
+                );
+            } else {
+                display.print_game(&snake, &fruit_manager.fruits, false, 0, 0);
+            }
+
+            thread::sleep(time::Duration::from_millis(loaded_settings.snake_wait));
+
         //
         } else if state == mechanics::State::Lost {
             timer.stop();
